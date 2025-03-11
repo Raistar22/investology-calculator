@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { ArrowRight, TrendingUp, Shield, Building, Coins } from 'lucide-react';
+import { ArrowRight, TrendingUp, Shield, Building, Coins, Gem, Rocket, PiggyBank, BarChart, LineChart } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { cn } from '@/lib/utils';
@@ -36,7 +36,7 @@ const InvestmentRecommendations: React.FC<InvestmentRecommendationsProps> = ({
       description: 'High growth potential with higher volatility, suitable for long-term goals.',
       riskLevel: 'High',
       expectedReturn: 12,
-      allocation: 40,
+      allocation: 25,
       timeHorizon: '5+ years'
     },
     {
@@ -46,7 +46,7 @@ const InvestmentRecommendations: React.FC<InvestmentRecommendationsProps> = ({
       description: 'Steady returns with lower risk, ideal for capital preservation.',
       riskLevel: 'Low',
       expectedReturn: 7,
-      allocation: 25,
+      allocation: 15,
       timeHorizon: '2-4 years'
     },
     {
@@ -56,7 +56,7 @@ const InvestmentRecommendations: React.FC<InvestmentRecommendationsProps> = ({
       description: 'Tangible assets with rental income potential and capital appreciation.',
       riskLevel: 'Medium',
       expectedReturn: 9,
-      allocation: 20,
+      allocation: 15,
       timeHorizon: '7+ years'
     },
     {
@@ -66,8 +66,58 @@ const InvestmentRecommendations: React.FC<InvestmentRecommendationsProps> = ({
       description: 'Hedge against inflation and economic uncertainty with moderate returns.',
       riskLevel: 'Medium',
       expectedReturn: 8,
-      allocation: 15,
+      allocation: 10,
       timeHorizon: '3-5 years'
+    },
+    {
+      id: 'startups',
+      name: 'Startup Investments',
+      icon: <Rocket className="h-5 w-5" />,
+      description: 'High risk, high reward investments in early-stage companies with growth potential.',
+      riskLevel: 'High',
+      expectedReturn: 18,
+      allocation: 5,
+      timeHorizon: '7-10 years'
+    },
+    {
+      id: 'mutual_funds',
+      name: 'Mutual Funds',
+      icon: <BarChart className="h-5 w-5" />,
+      description: 'Professionally managed investment vehicles with diversified portfolios.',
+      riskLevel: 'Medium',
+      expectedReturn: 10,
+      allocation: 10,
+      timeHorizon: '3-7 years'
+    },
+    {
+      id: 'fixed_deposits',
+      name: 'Fixed Deposits',
+      icon: <PiggyBank className="h-5 w-5" />,
+      description: 'Low risk investments with guaranteed returns and capital protection.',
+      riskLevel: 'Low',
+      expectedReturn: 6,
+      allocation: 10,
+      timeHorizon: '1-3 years'
+    },
+    {
+      id: 'crypto',
+      name: 'Cryptocurrency',
+      icon: <LineChart className="h-5 w-5" />,
+      description: 'Highly volatile digital assets with potential for significant returns.',
+      riskLevel: 'High',
+      expectedReturn: 20,
+      allocation: 5,
+      timeHorizon: '4-8 years'
+    },
+    {
+      id: 'luxury_assets',
+      name: 'Luxury Assets',
+      icon: <Gem className="h-5 w-5" />,
+      description: 'Collectibles, art, and luxury items that appreciate in value over time.',
+      riskLevel: 'Medium',
+      expectedReturn: 8,
+      allocation: 5,
+      timeHorizon: '8+ years'
     }
   ];
 
@@ -102,7 +152,7 @@ const InvestmentRecommendations: React.FC<InvestmentRecommendationsProps> = ({
             <p className="text-sm font-medium">Recommended Monthly Investment</p>
             <p className="text-2xl font-bold">₹{recommendedMonthlyInvestment.toLocaleString('en-IN')}</p>
           </div>
-          <div className="grid grid-cols-4 gap-2 w-full md:w-auto">
+          <div className="grid grid-cols-9 gap-1 w-full md:w-auto">
             {investmentOptions.map((option) => (
               <div key={option.id} className="flex flex-col items-center">
                 <div 
@@ -116,7 +166,7 @@ const InvestmentRecommendations: React.FC<InvestmentRecommendationsProps> = ({
         </div>
       </div>
       
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {investmentOptions.map((option) => (
           <div 
             key={option.id}
