@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { 
   TrendingUp, 
@@ -121,6 +120,8 @@ const StockMarketData = () => {
   const [stocks, setStocks] = useState<StockData[]>(mockStocks);
   const [lastUpdated, setLastUpdated] = useState<Date>(new Date());
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [selectedStock, setSelectedStock] = useState<StockData | null>(null);
+  const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false);
 
   const refreshData = () => {
     setIsLoading(true);
@@ -171,7 +172,16 @@ const StockMarketData = () => {
     return () => clearInterval(intervalId);
   }, [indices, stocks]);
   
-  // Function to render mini sparkline charts
+  const handleStockClick = (stock: StockData) => {
+    setSelectedStock(stock);
+    setIsDialogOpen(true);
+  };
+
+  const handleCloseDialog = () => {
+    setIsDialogOpen(false);
+    setSelectedStock(null);
+  };
+
   const renderMiniChart = (history: number[]) => {
     const min = Math.min(...history);
     const max = Math.max(...history);
@@ -273,7 +283,11 @@ const StockMarketData = () => {
               </thead>
               <tbody>
                 {stocks.map((stock) => (
-                  <tr key={stock.id} className="border-b hover:bg-muted/50">
+                  <tr 
+                    key={stock.id} 
+                    className="border-b hover:bg-muted/50 cursor-pointer transition-colors"
+                    onClick={() => handleStockClick(stock)}
+                  >
                     <td className="p-2">
                       <div>
                         <div className="font-medium">{stock.name}</div>
