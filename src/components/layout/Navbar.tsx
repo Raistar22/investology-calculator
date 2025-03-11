@@ -1,8 +1,7 @@
-
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { cn } from '@/lib/utils';
-import { Calculator, Home, Menu, X, LogIn, GitHub, User } from 'lucide-react';
+import { Calculator, Home, Menu, X, LogIn, Github, User } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { 
   DropdownMenu,
@@ -120,7 +119,7 @@ const Navbar = () => {
                   Google
                 </DropdownMenuItem>
                 <DropdownMenuItem onClick={() => handleLogin('github')} className="cursor-pointer">
-                  <GitHub className="h-4 w-4 mr-2" />
+                  <Github className="h-4 w-4 mr-2" />
                   GitHub
                 </DropdownMenuItem>
               </DropdownMenuContent>
@@ -205,7 +204,7 @@ const Navbar = () => {
                   className="justify-start"
                   onClick={() => handleLogin('github')}
                 >
-                  <GitHub className="h-4 w-4 mr-2" />
+                  <Github className="h-4 w-4 mr-2" />
                   Login with GitHub
                 </Button>
               </>
