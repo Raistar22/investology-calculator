@@ -7,6 +7,7 @@ import TaxRegimeSelector from '@/components/calculator/TaxRegimeSelector';
 import IncomeSourcesForm, { IncomeSource } from '@/components/calculator/IncomeSourcesForm';
 import InvestmentRecommendations, { InvestmentOption } from '@/components/calculator/InvestmentRecommendations';
 import ReturnCalculator from '@/components/calculator/ReturnCalculator';
+import StockMarketData from '@/components/calculator/StockMarketData';
 import { toast } from 'sonner';
 
 const Calculator = () => {
@@ -75,6 +76,9 @@ const Calculator = () => {
               selectedInvestment={selectedInvestment}
               recommendedMonthly={recommendedMonthlyInvestment}
             />
+            
+            {/* New Stock Market Data Component */}
+            <StockMarketData />
           </div>
         </div>
       </main>
