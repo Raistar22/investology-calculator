@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { ArrowRight, TrendingUp, Shield, Building, Gold, Coins } from 'lucide-react';
+import { ArrowRight, TrendingUp, Shield, Building, Coins } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { cn } from '@/lib/utils';
@@ -62,7 +62,7 @@ const InvestmentRecommendations: React.FC<InvestmentRecommendationsProps> = ({
     {
       id: 'gold',
       name: 'Gold & Precious Metals',
-      icon: <Gold className="h-5 w-5" />,
+      icon: <Coins className="h-5 w-5" />,
       description: 'Hedge against inflation and economic uncertainty with moderate returns.',
       riskLevel: 'Medium',
       expectedReturn: 8,
