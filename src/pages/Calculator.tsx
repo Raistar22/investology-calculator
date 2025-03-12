@@ -90,6 +90,8 @@ const Calculator = () => {
             {/* Retirement Dashboard Component */}
             {totalIncome > 0 && (
               <RetirementDashboard
+                currentAge={30}
+                retirementAge={60}
                 currentIncome={totalIncome}
                 selectedInvestment={selectedInvestment}
                 recommendedMonthlyInvestment={recommendedMonthlyInvestment}

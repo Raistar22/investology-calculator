@@ -4,7 +4,8 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import RetirementProgressCards from './RetirementProgressCards';
 import IncomeProjectionCard from './IncomeProjectionCard';
 import LifestyleCards from './LifestyleCards';
-import useRetirementCalculations from './useRetirementCalculations';
+import { useRetirementCalculations } from './useRetirementCalculations';
+import { InvestmentOption } from '@/components/calculator/InvestmentRecommendations';
 
 // Define the types for lifestyle categories
 export interface LifestyleCategory {
@@ -14,91 +15,72 @@ export interface LifestyleCategory {
 }
 
 interface RetirementDashboardProps {
-  currentAge: number;
-  retirementAge: number;
-  currentSavings: number;
-  monthlyContribution: number;
-  expectedReturnRate: number;
-  inflationRate: number;
-  lifeExpectancy: number;
+  currentAge?: number;
+  retirementAge?: number;
+  currentSavings?: number;
+  monthlyContribution?: number;
+  expectedReturnRate?: number;
+  inflationRate?: number;
+  lifeExpectancy?: number;
+  currentIncome: number;
+  selectedInvestment: InvestmentOption | null;
+  recommendedMonthlyInvestment: number;
 }
 
 const RetirementDashboard: React.FC<RetirementDashboardProps> = ({
-  currentAge,
-  retirementAge,
-  currentSavings,
-  monthlyContribution,
-  expectedReturnRate,
-  inflationRate,
-  lifeExpectancy,
+  currentAge = 30,
+  retirementAge = 60,
+  currentSavings = 100000,
+  monthlyContribution = 10000,
+  expectedReturnRate = 8,
+  inflationRate = 5,
+  lifeExpectancy = 85,
+  currentIncome,
+  selectedInvestment,
+  recommendedMonthlyInvestment,
 }) => {
   const {
-    yearsToRetirement,
-    retirementCorpus,
-    monthlyIncomeFromCorpus,
-    annualIncomeFromCorpus,
-    percentageToGoal,
-    savingsRate,
+    projection,
+    savingProgress,
+    timeProgress
   } = useRetirementCalculations({
     currentAge,
     retirementAge,
-    currentSavings,
-    monthlyContribution,
-    expectedReturnRate,
-    inflationRate,
-    lifeExpectancy,
+    currentIncome,
+    selectedInvestment,
+    recommendedMonthlyInvestment,
   });
 
-  // Define lifestyle categories with their types
-  const lifestyleCategories: LifestyleCategory[] = [
-    {
-      type: "housing",
-      tier: monthlyIncomeFromCorpus > 100000 ? "luxury" : monthlyIncomeFromCorpus > 50000 ? "comfortable" : "modest",
-      location: monthlyIncomeFromCorpus > 80000 ? "premium city center" : monthlyIncomeFromCorpus > 40000 ? "good neighborhood" : "suburb",
-      description: monthlyIncomeFromCorpus > 100000 
-        ? "Luxury apartment in a premium location" 
-        : monthlyIncomeFromCorpus > 50000 
-        ? "Comfortable housing in a good neighborhood" 
-        : "Modest accommodation in an affordable area"
-    },
-    {
-      type: "travel",
-      frequency: monthlyIncomeFromCorpus > 100000 ? "frequent" : monthlyIncomeFromCorpus > 50000 ? "occasional" : "rare",
-      destinations: monthlyIncomeFromCorpus > 100000 ? ["International luxury", "First class"] : monthlyIncomeFromCorpus > 50000 ? ["Domestic premium", "International budget"] : ["Local getaways"],
-      description: monthlyIncomeFromCorpus > 100000 
-        ? "Frequent international travel with luxury accommodations" 
-        : monthlyIncomeFromCorpus > 50000 
-        ? "Occasional international and regular domestic trips" 
-        : "Budget-friendly local vacations"
-    },
-    {
-      type: "healthcare",
-      coverage: monthlyIncomeFromCorpus > 80000 ? "comprehensive" : monthlyIncomeFromCorpus > 40000 ? "standard" : "basic",
-      quality: monthlyIncomeFromCorpus > 80000 ? "premium" : monthlyIncomeFromCorpus > 40000 ? "good" : "adequate",
-      description: monthlyIncomeFromCorpus > 80000 
-        ? "Access to premium healthcare with comprehensive coverage" 
-        : monthlyIncomeFromCorpus > 40000 
-        ? "Good quality healthcare with standard coverage" 
-        : "Adequate healthcare with basic coverage"
-    }
-  ];
+  // Calculate years to retirement
+  const yearsToRetirement = retirementAge - currentAge;
+  
+  // For simplicity, assuming the goal is to have 30 times annual income by retirement
+  const retirementGoal = currentIncome * 30;
+  const currentProgress = currentSavings + (monthlyContribution * 12 * yearsToRetirement);
+  const percentageToGoal = Math.min(Math.round((currentProgress / retirementGoal) * 100), 100);
+  
+  // Calculate savings rate (percentage of income being saved)
+  const savingsRate = Math.round((monthlyContribution * 12 / currentIncome) * 100);
 
   return (
     <div className="space-y-6">
       <h2 className="text-2xl font-bold mb-6">Retirement Lifestyle Dashboard</h2>
       
       <RetirementProgressCards 
-        yearsToRetirement={yearsToRetirement}
-        percentageToGoal={percentageToGoal}
-        retirementCorpus={retirementCorpus}
-        savingsRate={savingsRate}
+        timeProgress={timeProgress}
+        savingProgress={savingProgress}
+        retirementAge={retirementAge}
+        currentAge={currentAge}
+        recommendedMonthlyInvestment={recommendedMonthlyInvestment}
       />
       
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <IncomeProjectionCard 
-          monthlyIncome={monthlyIncomeFromCorpus}
-          annualIncome={annualIncomeFromCorpus}
-        />
+        {projection && (
+          <IncomeProjectionCard 
+            monthlyIncome={projection.monthlyIncome}
+            annualIncome={projection.annualIncome}
+          />
+        )}
         
         <Card className="md:col-span-2 border border-white/20 shadow-md overflow-hidden">
           <CardHeader className="bg-primary/5 rounded-t-lg pb-3">
@@ -135,7 +117,16 @@ const RetirementDashboard: React.FC<RetirementDashboardProps> = ({
         </Card>
       </div>
       
-      <LifestyleCards lifestyleCategories={lifestyleCategories} />
+      {projection && (
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+          <LifestyleCards 
+            housing={projection.housing}
+            travel={projection.travel}
+            healthcare={projection.healthcare}
+            lifestyle={projection.lifestyle}
+          />
+        </div>
+      )}
     </div>
   );
 };
