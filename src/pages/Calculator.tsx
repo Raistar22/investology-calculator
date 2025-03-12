@@ -8,6 +8,7 @@ import IncomeSourcesForm, { IncomeSource } from '@/components/calculator/IncomeS
 import InvestmentRecommendations, { InvestmentOption } from '@/components/calculator/InvestmentRecommendations';
 import ReturnCalculator from '@/components/calculator/ReturnCalculator';
 import StockMarketData from '@/components/calculator/StockMarketData';
+import RetirementDashboard from '@/components/calculator/RetirementDashboard';
 import { toast } from 'sonner';
 
 const Calculator = () => {
@@ -77,7 +78,16 @@ const Calculator = () => {
               recommendedMonthly={recommendedMonthlyInvestment}
             />
             
-            {/* New Stock Market Data Component */}
+            {/* New Retirement Dashboard Component */}
+            {totalIncome > 0 && (
+              <RetirementDashboard
+                currentIncome={totalIncome}
+                selectedInvestment={selectedInvestment}
+                recommendedMonthlyInvestment={recommendedMonthlyInvestment}
+              />
+            )}
+            
+            {/* Stock Market Data Component */}
             <StockMarketData />
           </div>
         </div>
