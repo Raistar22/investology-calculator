@@ -13,7 +13,7 @@ const IncomeProjectionCard: React.FC<IncomeProjectionCardProps> = ({
   annualIncome,
 }) => {
   return (
-    <Card>
+    <Card className="border border-white/20 shadow-md overflow-hidden">
       <CardHeader className="bg-primary/5 rounded-t-lg pb-3">
         <div className="flex items-center justify-between">
           <CardTitle className="text-lg">Post-Retirement Income</CardTitle>
