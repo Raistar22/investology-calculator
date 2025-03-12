@@ -9,6 +9,7 @@ import InvestmentRecommendations, { InvestmentOption } from '@/components/calcul
 import ReturnCalculator from '@/components/calculator/ReturnCalculator';
 import StockMarketData from '@/components/calculator/StockMarketData';
 import RetirementDashboard from '@/components/calculator/RetirementDashboard';
+import PensionWithdrawalPlanner from '@/components/calculator/PensionWithdrawalPlanner';
 import { toast } from 'sonner';
 
 const Calculator = () => {
@@ -78,7 +79,15 @@ const Calculator = () => {
               recommendedMonthly={recommendedMonthlyInvestment}
             />
             
-            {/* New Retirement Dashboard Component */}
+            {/* New Pension Withdrawal Planner Component */}
+            {totalIncome > 0 && (
+              <PensionWithdrawalPlanner
+                currentIncome={totalIncome}
+                pensionCorpus={totalIncome * 10}
+              />
+            )}
+            
+            {/* Retirement Dashboard Component */}
             {totalIncome > 0 && (
               <RetirementDashboard
                 currentIncome={totalIncome}
