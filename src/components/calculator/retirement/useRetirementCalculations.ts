@@ -9,11 +9,13 @@ interface RetirementProjection {
     description: string;
   };
   travel: {
+    type: string;
     frequency: string;
     destinations: string[];
     description: string;
   };
   healthcare: {
+    type: string;
     coverage: string;
     quality: string;
     description: string;
@@ -83,11 +85,13 @@ export const useRetirementCalculations = ({
         description: "A comfortable apartment in a tier-2 city like Pune or Jaipur."
       };
       travel = {
+        type: "Basic Travel",
         frequency: "Occasional",
         destinations: ["Domestic destinations", "Budget trips"],
         description: "Domestic travel once a year to popular tourist destinations."
       };
       healthcare = {
+        type: "Standard Healthcare",
         coverage: "Basic",
         quality: "Government/Affordable Private",
         description: "Basic health insurance with access to standard medical care."
@@ -104,11 +108,13 @@ export const useRetirementCalculations = ({
         description: "A spacious apartment in suburbs of cities like Bangalore or Mumbai."
       };
       travel = {
+        type: "Regular Travel",
         frequency: "Regular",
         destinations: ["Domestic luxury", "Occasional international"],
         description: "Annual international trip and regular domestic getaways."
       };
       healthcare = {
+        type: "Quality Healthcare",
         coverage: "Comprehensive",
         quality: "Private Hospitals",
         description: "Good health insurance with access to quality private hospitals."
@@ -125,11 +131,13 @@ export const useRetirementCalculations = ({
         description: "A premium property in Goa, Mumbai, or other prime locations."
       };
       travel = {
+        type: "Luxury Travel",
         frequency: "Frequent",
         destinations: ["International luxury", "Multiple annual trips"],
         description: "Multiple international trips per year including luxury destinations."
       };
       healthcare = {
+        type: "Premium Healthcare",
         coverage: "Premium",
         quality: "Best Private Hospitals",
         description: "Top-tier health coverage with access to the best healthcare facilities."
