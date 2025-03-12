@@ -1,11 +1,13 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import RetirementProgressCards from './RetirementProgressCards';
 import IncomeProjectionCard from './IncomeProjectionCard';
 import LifestyleCards from './LifestyleCards';
 import { useRetirementCalculations } from './useRetirementCalculations';
 import { InvestmentOption } from '@/components/calculator/InvestmentRecommendations';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 
 // Define the types for lifestyle categories
 export interface LifestyleCategory {
@@ -15,7 +17,6 @@ export interface LifestyleCategory {
 }
 
 interface RetirementDashboardProps {
-  currentAge?: number;
   retirementAge?: number;
   currentSavings?: number;
   monthlyContribution?: number;
@@ -28,7 +29,6 @@ interface RetirementDashboardProps {
 }
 
 const RetirementDashboard: React.FC<RetirementDashboardProps> = ({
-  currentAge = 30,
   retirementAge = 60,
   currentSavings = 100000,
   monthlyContribution = 10000,
@@ -39,6 +39,8 @@ const RetirementDashboard: React.FC<RetirementDashboardProps> = ({
   selectedInvestment,
   recommendedMonthlyInvestment,
 }) => {
+  const [currentAge, setCurrentAge] = useState<number>(30);
+  
   const {
     projection,
     savingProgress,
@@ -62,17 +64,52 @@ const RetirementDashboard: React.FC<RetirementDashboardProps> = ({
   // Calculate savings rate (percentage of income being saved)
   const savingsRate = Math.round((monthlyContribution * 12 / currentIncome) * 100);
 
+  const handleAgeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = parseInt(e.target.value);
+    if (!isNaN(value) && value > 0 && value < retirementAge) {
+      setCurrentAge(value);
+    }
+  };
+
   return (
     <div className="space-y-6">
       <h2 className="text-2xl font-bold mb-6">Retirement Lifestyle Dashboard</h2>
       
-      <RetirementProgressCards 
-        timeProgress={timeProgress}
-        savingProgress={savingProgress}
-        retirementAge={retirementAge}
-        currentAge={currentAge}
-        recommendedMonthlyInvestment={recommendedMonthlyInvestment}
-      />
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+        <Card className="border border-white/20 shadow-md overflow-hidden">
+          <CardHeader className="bg-primary/5 rounded-t-lg pb-3">
+            <CardTitle className="text-lg">Your Information</CardTitle>
+          </CardHeader>
+          <CardContent className="pt-5">
+            <div className="space-y-4">
+              <div>
+                <Label htmlFor="current-age" className="mb-2 block">Current Age</Label>
+                <Input 
+                  id="current-age" 
+                  type="number" 
+                  value={currentAge} 
+                  onChange={handleAgeChange} 
+                  min={18} 
+                  max={retirementAge - 1} 
+                  placeholder="Enter your current age"
+                  className="max-w-xs"
+                />
+                <p className="text-xs text-muted-foreground mt-1">
+                  You have {yearsToRetirement} years until retirement at age {retirementAge}
+                </p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        <RetirementProgressCards 
+          timeProgress={timeProgress}
+          savingProgress={savingProgress}
+          retirementAge={retirementAge}
+          currentAge={currentAge}
+          recommendedMonthlyInvestment={recommendedMonthlyInvestment}
+        />
+      </div>
       
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {projection && (
