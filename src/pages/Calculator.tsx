@@ -8,7 +8,7 @@ import IncomeSourcesForm, { IncomeSource } from '@/components/calculator/IncomeS
 import InvestmentRecommendations, { InvestmentOption } from '@/components/calculator/InvestmentRecommendations';
 import ReturnCalculator from '@/components/calculator/ReturnCalculator';
 import StockMarketData from '@/components/calculator/StockMarketData';
-import RetirementDashboard from '@/components/calculator/RetirementDashboard';
+import RetirementDashboard from '@/components/calculator/retirement/RetirementDashboard';
 import PensionWithdrawalPlanner from '@/components/calculator/PensionWithdrawalPlanner';
 import { toast } from 'sonner';
 
