@@ -1,7 +1,6 @@
-
 import React from 'react';
 import { Button } from '@/components/ui/button';
-import { Download, FileSpreadsheet, FilePdf } from 'lucide-react';
+import { Download, FileSpreadsheet, FilePdf as FileText } from 'lucide-react';
 import { exportToExcel, exportToPDF } from '@/utils/exportData';
 import { InvestmentOption } from './InvestmentRecommendations';
 import { IncomeSource } from './IncomeSourcesForm';
@@ -77,7 +76,7 @@ const ExportOptions: React.FC<ExportOptionsProps> = ({
         className="gap-2"
         onClick={handleExportPDF}
       >
-        <FilePdf className="h-4 w-4" />
+        <FileText className="h-4 w-4" />
         Export to PDF
       </Button>
     </div>

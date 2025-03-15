@@ -36,8 +36,9 @@ export const exportToExcel = (data: ExportData) => {
   // Add income sources as separate sheet
   const incomeSourcesSheet = XLSX.utils.json_to_sheet(
     data.incomeSources.map(source => ({
-      'Source': source.name,
+      'Source': source.type,
       'Amount': `₹${source.amount?.toLocaleString('en-IN') || '0'}`,
+      'Description': source.description || ''
     }))
   );
 
