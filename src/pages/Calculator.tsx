@@ -1,6 +1,6 @@
 
-import React, { useState, useEffect } from 'react';
-import { Calculator as CalculatorIcon } from 'lucide-react';
+import React, { useState, useEffect, useRef } from 'react';
+import { Calculator as CalculatorIcon, Download } from 'lucide-react';
 import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
 import TaxRegimeSelector from '@/components/calculator/TaxRegimeSelector';
@@ -10,13 +10,19 @@ import ReturnCalculator from '@/components/calculator/ReturnCalculator';
 import StockMarketData from '@/components/calculator/StockMarketData';
 import RetirementDashboard from '@/components/calculator/retirement/RetirementDashboard';
 import PensionWithdrawalPlanner from '@/components/calculator/PensionWithdrawalPlanner';
+import ExportOptions from '@/components/calculator/ExportOptions';
 import { toast } from 'sonner';
+import { Button } from '@/components/ui/button';
 
 const Calculator = () => {
   const [selectedRegime, setSelectedRegime] = useState<'old' | 'new' | null>(null);
   const [incomeSources, setIncomeSources] = useState<IncomeSource[]>([]);
   const [totalIncome, setTotalIncome] = useState<number>(0);
   const [selectedInvestment, setSelectedInvestment] = useState<InvestmentOption | null>(null);
+  const [finalValue, setFinalValue] = useState<number>(0);
+  const [totalInvested, setTotalInvested] = useState<number>(0);
+  const [totalReturns, setTotalReturns] = useState<number>(0);
+  const [timeHorizon, setTimeHorizon] = useState<number>(10);
   
   useEffect(() => {
     const total = incomeSources.reduce((sum, source) => sum + (source.amount || 0), 0);
@@ -35,6 +41,13 @@ const Calculator = () => {
   const handleInvestmentSelect = (option: InvestmentOption) => {
     setSelectedInvestment(option);
     toast.success(`${option.name} selected as investment choice`);
+  };
+
+  const handleReturnCalculation = (finalVal: number, investedAmount: number, returns: number, years: number) => {
+    setFinalValue(finalVal);
+    setTotalInvested(investedAmount);
+    setTotalReturns(returns);
+    setTimeHorizon(years);
   };
   
   // Calculate recommended monthly investment (30% of annual income divided by 12)
@@ -58,7 +71,7 @@ const Calculator = () => {
             </p>
           </div>
           
-          <div className="space-y-8">
+          <div id="investment-summary" className="space-y-8">
             <TaxRegimeSelector
               onSelect={handleRegimeSelect}
               selectedRegime={selectedRegime}
@@ -77,7 +90,23 @@ const Calculator = () => {
             <ReturnCalculator
               selectedInvestment={selectedInvestment}
               recommendedMonthly={recommendedMonthlyInvestment}
+              onCalculate={handleReturnCalculation}
             />
+            
+            {/* Export Options */}
+            {selectedInvestment && totalIncome > 0 && (
+              <ExportOptions
+                taxRegime={selectedRegime}
+                incomeSources={incomeSources}
+                totalIncome={totalIncome}
+                selectedInvestment={selectedInvestment}
+                recommendedMonthlyInvestment={recommendedMonthlyInvestment}
+                timeHorizon={timeHorizon}
+                finalValue={finalValue}
+                totalInvested={totalInvested}
+                totalReturns={totalReturns}
+              />
+            )}
             
             {/* New Pension Withdrawal Planner Component */}
             {totalIncome > 0 && (

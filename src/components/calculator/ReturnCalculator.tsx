@@ -41,11 +41,13 @@ ChartJS.register(
 interface ReturnCalculatorProps {
   selectedInvestment: InvestmentOption | null;
   recommendedMonthly: number;
+  onCalculate?: (finalValue: number, totalInvested: number, totalReturns: number, years: number) => void;
 }
 
 const ReturnCalculator: React.FC<ReturnCalculatorProps> = ({
   selectedInvestment,
-  recommendedMonthly
+  recommendedMonthly,
+  onCalculate
 }) => {
   const [amount, setAmount] = useState(recommendedMonthly || 10000);
   const [years, setYears] = useState(10);
@@ -63,6 +65,38 @@ const ReturnCalculator: React.FC<ReturnCalculatorProps> = ({
       setAmount(recommendedMonthly);
     }
   }, [recommendedMonthly]);
+  
+  useEffect(() => {
+    if (selectedInvestment && onCalculate) {
+      // Calculate values for export
+      const totalInvested = frequency === 'monthly' 
+        ? amount * 12 * years 
+        : amount * years;
+        
+      const rate = selectedInvestment.expectedReturn / 100;
+      const periodsPerYear = frequency === 'monthly' ? 12 : 1;
+      const ratePerPeriod = frequency === 'monthly' ? rate / 12 : rate;
+      
+      // Final value calculation for regular investments
+      let finalValue = 0;
+      if (frequency === 'monthly') {
+        // For monthly investments using compound interest formula for periodic payments
+        finalValue = amount * ((Math.pow(1 + ratePerPeriod, periodsPerYear * years) - 1) / ratePerPeriod) * (1 + ratePerPeriod);
+      } else {
+        // For yearly investments
+        let yearlyValue = 0;
+        for (let i = 0; i < years; i++) {
+          yearlyValue = (yearlyValue + amount) * (1 + rate);
+        }
+        finalValue = yearlyValue;
+      }
+      
+      // Calculate returns
+      const totalReturns = finalValue - totalInvested;
+      
+      onCalculate(Math.round(finalValue), Math.round(totalInvested), Math.round(totalReturns), years);
+    }
+  }, [selectedInvestment, amount, years, frequency, onCalculate]);
   
   const generateChartData = () => {
     if (!selectedInvestment) return;
