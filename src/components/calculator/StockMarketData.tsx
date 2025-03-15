@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { 
   TrendingUp, 
@@ -5,11 +6,14 @@ import {
   ArrowUp, 
   ArrowDown, 
   RefreshCw,
-  BarChart4
+  BarChart4,
+  Briefcase
 } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
+import StockActionDialog from './StockActionDialog';
+import { BrokerService, BrokerStock } from './broker/BrokerService';
 
 // Mock data for stock indices
 const mockIndices = [
@@ -122,6 +126,7 @@ const StockMarketData = () => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [selectedStock, setSelectedStock] = useState<StockData | null>(null);
   const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false);
+  const [showBroker, setShowBroker] = useState<boolean>(false);
 
   const refreshData = () => {
     setIsLoading(true);
@@ -182,6 +187,14 @@ const StockMarketData = () => {
     setSelectedStock(null);
   };
 
+  const handleAddToWatchlist = (stock: BrokerStock) => {
+    toast.success(`Added ${stock.name} to watchlist`);
+  };
+
+  const handlePlaceOrder = (stock: BrokerStock, action: 'buy' | 'sell', quantity: number, type: any, price?: number, duration?: any) => {
+    toast.success(`${action.toUpperCase()} order for ${quantity} ${stock.ticker} shares placed`);
+  };
+
   const renderMiniChart = (history: number[]) => {
     const min = Math.min(...history);
     const max = Math.max(...history);
@@ -214,17 +227,34 @@ const StockMarketData = () => {
             Last updated: {lastUpdated.toLocaleTimeString()}
           </p>
         </div>
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={refreshData}
-          disabled={isLoading}
-          className="gap-2"
-        >
-          <RefreshCw className={`h-4 w-4 ${isLoading ? 'animate-spin' : ''}`} />
-          Refresh
-        </Button>
+        <div className="flex gap-2">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setShowBroker(!showBroker)}
+            className="gap-2"
+          >
+            <Briefcase className="h-4 w-4" />
+            {showBroker ? 'Hide Broker' : 'Show Broker'}
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={refreshData}
+            disabled={isLoading}
+            className="gap-2"
+          >
+            <RefreshCw className={`h-4 w-4 ${isLoading ? 'animate-spin' : ''}`} />
+            Refresh
+          </Button>
+        </div>
       </div>
+      
+      {showBroker && (
+        <div className="mb-6">
+          <BrokerService availableBalance={100000} />
+        </div>
+      )}
       
       <div className="space-y-6">
         {/* Market Indices */}
@@ -329,6 +359,15 @@ const StockMarketData = () => {
           </div>
         </div>
       </div>
+      
+      {/* Stock Action Dialog */}
+      <StockActionDialog 
+        isOpen={isDialogOpen} 
+        onClose={handleCloseDialog} 
+        stock={selectedStock}
+        onAddToWatchlist={handleAddToWatchlist}
+        onPlaceOrder={handlePlaceOrder}
+      />
     </div>
   );
 };

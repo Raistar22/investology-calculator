@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useRef } from 'react';
 import { Calculator as CalculatorIcon, Download } from 'lucide-react';
 import Navbar from '@/components/layout/Navbar';
@@ -51,7 +50,6 @@ const Calculator = () => {
     setTimeHorizon(years);
   };
   
-  // Calculate recommended monthly investment (30% of annual income divided by 12)
   const recommendedMonthlyInvestment = Math.round((totalIncome * 0.3) / 12);
 
   return (
@@ -98,9 +96,7 @@ const Calculator = () => {
               onCalculate={handleReturnCalculation}
             />
             
-            {/* Export Options */}
-            {selectedInvestment && totalIncome > 0 && (
-              <ExportOptions
+            <ExportOptions
                 taxRegime={selectedRegime}
                 incomeSources={incomeSources}
                 totalIncome={totalIncome}
@@ -111,9 +107,9 @@ const Calculator = () => {
                 totalInvested={totalInvested}
                 totalReturns={totalReturns}
               />
-            )}
             
-            {/* New Pension Withdrawal Planner Component */}
+            <StockMarketData />
+            
             {totalIncome > 0 && (
               <PensionWithdrawalPlanner
                 currentIncome={totalIncome}
@@ -121,7 +117,6 @@ const Calculator = () => {
               />
             )}
             
-            {/* Retirement Dashboard Component */}
             {totalIncome > 0 && (
               <RetirementDashboard
                 currentIncome={totalIncome}
@@ -129,9 +124,6 @@ const Calculator = () => {
                 recommendedMonthlyInvestment={recommendedMonthlyInvestment}
               />
             )}
-            
-            {/* Stock Market Data Component */}
-            <StockMarketData />
           </div>
         </div>
       </main>
