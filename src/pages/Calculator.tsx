@@ -5,7 +5,8 @@ import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
 import TaxRegimeSelector from '@/components/calculator/TaxRegimeSelector';
 import IncomeSourcesForm, { IncomeSource } from '@/components/calculator/IncomeSourcesForm';
-import InvestmentRecommendations, { InvestmentOption } from '@/components/calculator/InvestmentRecommendations';
+import InvestmentRecommendationsWithExport from '@/components/calculator/InvestmentRecommendationsWithExport';
+import { InvestmentOption } from '@/components/calculator/InvestmentRecommendations';
 import ReturnCalculator from '@/components/calculator/ReturnCalculator';
 import StockMarketData from '@/components/calculator/StockMarketData';
 import RetirementDashboard from '@/components/calculator/retirement/RetirementDashboard';
@@ -80,10 +81,14 @@ const Calculator = () => {
             <IncomeSourcesForm onUpdate={handleIncomeUpdate} />
             
             {totalIncome > 0 && (
-              <InvestmentRecommendations
+              <InvestmentRecommendationsWithExport
                 incomeTotal={totalIncome}
                 onSelect={handleInvestmentSelect}
                 selectedOption={selectedInvestment}
+                incomeSources={incomeSources}
+                taxRegime={selectedRegime}
+                recommendedMonthlyInvestment={recommendedMonthlyInvestment}
+                timeHorizon={timeHorizon}
               />
             )}
             

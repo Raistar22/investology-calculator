@@ -1,6 +1,7 @@
+
 import React from 'react';
 import { Button } from '@/components/ui/button';
-import { Download, FileSpreadsheet, FilePdf as FileText } from 'lucide-react';
+import { Download, FileSpreadsheet, FileText } from 'lucide-react';
 import { exportToExcel, exportToPDF } from '@/utils/exportData';
 import { InvestmentOption } from './InvestmentRecommendations';
 import { IncomeSource } from './IncomeSourcesForm';
