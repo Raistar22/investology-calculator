@@ -19,6 +19,7 @@ const mockIndices = [
   {
     id: 'sensex',
     name: 'SENSEX',
+    ticker: 'BSE SENSEX',
     value: 74250.78,
     change: 245.86,
     changePercent: 0.33,
@@ -27,6 +28,7 @@ const mockIndices = [
   {
     id: 'nifty',
     name: 'NIFTY 50',
+    ticker: 'NIFTY 50',
     value: 22571.40,
     change: 69.35,
     changePercent: 0.31,
@@ -35,6 +37,7 @@ const mockIndices = [
   {
     id: 'banknifty',
     name: 'BANK NIFTY',
+    ticker: 'BANK NIFTY',
     value: 48125.65,
     change: -54.20,
     changePercent: -0.11,
@@ -43,6 +46,7 @@ const mockIndices = [
   {
     id: 'midcap',
     name: 'NIFTY MIDCAP',
+    ticker: 'NIFTY MIDCAP',
     value: 14768.90,
     change: 102.45,
     changePercent: 0.70,
@@ -194,7 +198,9 @@ const StockMarketData = () => {
     toast.success(`${action.toUpperCase()} order for ${quantity} ${stock.ticker} shares placed`);
   };
 
-  const renderMiniChart = (history: number[]) => {
+  const renderMiniChart = (history: number[] = []) => {
+    if (!history || history.length === 0) return null;
+    
     const min = Math.min(...history);
     const max = Math.max(...history);
     const range = max - min;
