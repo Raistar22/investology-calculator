@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { ArrowUp, ArrowDown, Clock, AlertTriangle } from "lucide-react";
-import { Order, OrderType, OrderDuration, Stock } from './BrokerService';
+import { Stock, OrderType, OrderDuration } from './types';
 import { toast } from 'sonner';
 
 interface OrderDialogProps {

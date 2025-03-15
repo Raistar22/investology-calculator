@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
@@ -75,8 +74,8 @@ const BrokerService: React.FC<BrokerServiceProps> = ({ availableBalance = 100000
       action,
       quantity,
       type,
-      price,
       duration,
+      price,
       handleExecuteOrder,
       setOrders
     );

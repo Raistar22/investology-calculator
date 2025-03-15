@@ -12,7 +12,8 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
 import StockActionDialog from './StockActionDialog';
-import { BrokerService, BrokerStock } from './broker/BrokerService';
+import { BrokerService } from './broker/BrokerService';
+import { Stock } from './broker/types';
 
 // Mock data for stock indices
 const mockIndices = [
@@ -112,15 +113,7 @@ const mockStocks = [
   }
 ];
 
-type StockData = {
-  id: string;
-  name: string;
-  ticker: string;
-  value: number;
-  change: number;
-  changePercent: number;
-  history?: number[];
-};
+type StockData = Stock;
 
 const StockMarketData = () => {
   const [indices, setIndices] = useState<StockData[]>(mockIndices);
@@ -190,11 +183,11 @@ const StockMarketData = () => {
     setSelectedStock(null);
   };
 
-  const handleAddToWatchlist = (stock: BrokerStock) => {
+  const handleAddToWatchlist = (stock: Stock) => {
     toast.success(`Added ${stock.name} to watchlist`);
   };
 
-  const handlePlaceOrder = (stock: BrokerStock, action: 'buy' | 'sell', quantity: number, type: any, price?: number, duration?: any) => {
+  const handlePlaceOrder = (stock: Stock, action: 'buy' | 'sell', quantity: number, type: any, price?: number, duration?: any) => {
     toast.success(`${action.toUpperCase()} order for ${quantity} ${stock.ticker} shares placed`);
   };
 
@@ -378,3 +371,4 @@ const StockMarketData = () => {
 };
 
 export default StockMarketData;
+

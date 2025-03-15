@@ -6,7 +6,7 @@ import { ArrowUp, ArrowDown, Pause, Eye } from "lucide-react";
 import { toast } from 'sonner';
 import OrderDialog from './broker/OrderDialog';
 import { useState } from 'react';
-import { OrderType, OrderDuration } from './broker/BrokerService';
+import { OrderType, OrderDuration } from './broker/types';
 
 interface StockActionDialogProps {
   isOpen: boolean;
