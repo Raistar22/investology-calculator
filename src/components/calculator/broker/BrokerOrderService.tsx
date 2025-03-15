@@ -1,3 +1,4 @@
+
 import { toast } from 'sonner';
 import { Stock, Order, OrderType, OrderDuration, Portfolio } from './types';
 
@@ -87,9 +88,9 @@ export const placeOrder = (
   quantity: number, 
   type: OrderType = 'market',
   duration: OrderDuration = 'day',
-  price?: number,
   executeOrderFn: (order: Order) => Order,
-  updateOrders: (orderUpdater: (prevOrders: Order[]) => Order[]) => void
+  updateOrders: (orderUpdater: (prevOrders: Order[]) => Order[]) => void,
+  price?: number
 ) => {
   const newOrder: Order = {
     id: `order-${Date.now()}`,

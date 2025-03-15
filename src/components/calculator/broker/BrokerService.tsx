@@ -49,7 +49,6 @@ const BrokerService: React.FC<BrokerServiceProps> = ({ availableBalance = 100000
     }
   ]);
   
-  // Execute order with the current portfolio and balance
   const handleExecuteOrder = (order: Order): Order => {
     return executeOrder(
       order,
@@ -60,13 +59,12 @@ const BrokerService: React.FC<BrokerServiceProps> = ({ availableBalance = 100000
     );
   };
   
-  // Place order handling
   const handlePlaceOrder = (
     stock: Stock, 
     action: 'buy' | 'sell', 
     quantity: number, 
     type: OrderType = 'market', 
-    price?: number, 
+    price?: number,
     duration: OrderDuration = 'day'
   ) => {
     return placeOrder(
@@ -75,9 +73,9 @@ const BrokerService: React.FC<BrokerServiceProps> = ({ availableBalance = 100000
       quantity,
       type,
       duration,
-      price,
       handleExecuteOrder,
-      setOrders
+      setOrders,
+      price
     );
   };
   
