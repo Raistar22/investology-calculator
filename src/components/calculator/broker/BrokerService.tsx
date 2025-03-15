@@ -151,7 +151,7 @@ const BrokerService: React.FC<BrokerServiceProps> = ({ availableBalance = 100000
     
     return {
       ...order,
-      status: 'executed'
+      status: 'executed' as const // Use a type assertion to ensure type safety
     };
   };
   

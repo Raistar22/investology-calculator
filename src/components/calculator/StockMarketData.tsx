@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { 
   TrendingUp, 
@@ -112,11 +111,11 @@ const mockStocks = [
 type StockData = {
   id: string;
   name: string;
-  ticker?: string;
+  ticker: string;
   value: number;
   change: number;
   changePercent: number;
-  history: number[];
+  history?: number[];
 };
 
 const StockMarketData = () => {
