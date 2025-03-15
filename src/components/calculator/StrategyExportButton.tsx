@@ -27,6 +27,15 @@ const StrategyExportButton: React.FC<StrategyExportButtonProps> = ({
 }) => {
   const handleExportStrategy = () => {
     try {
+      // Calculate some projected values for the export
+      const monthlyReturn = selectedInvestment.expectedReturn / 100 / 12;
+      const totalMonths = timeHorizon * 12;
+      const projectedFinalValue = recommendedMonthlyInvestment * 
+        ((Math.pow(1 + monthlyReturn, totalMonths) - 1) / monthlyReturn) * 
+        (1 + monthlyReturn);
+      const totalInvested = recommendedMonthlyInvestment * totalMonths;
+      const totalReturns = projectedFinalValue - totalInvested;
+      
       const exportData = {
         taxRegime,
         incomeSources,
@@ -34,6 +43,9 @@ const StrategyExportButton: React.FC<StrategyExportButtonProps> = ({
         selectedInvestment,
         recommendedMonthlyInvestment,
         timeHorizon,
+        projectedFinalValue,
+        totalInvested,
+        totalReturns,
         strategyDetails: {
           name: selectedInvestment.name,
           description: selectedInvestment.description,
@@ -43,7 +55,7 @@ const StrategyExportButton: React.FC<StrategyExportButtonProps> = ({
         }
       };
       
-      exportToExcel(exportData, `${selectedInvestment.name.replace(/\s+/g, '_')}_Strategy.xlsx`);
+      exportToExcel(exportData);
       toast.success(`${selectedInvestment.name} strategy exported to Excel successfully`);
     } catch (error) {
       console.error('Error exporting strategy to Excel:', error);

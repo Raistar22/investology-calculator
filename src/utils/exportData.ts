@@ -49,7 +49,10 @@ export const exportToExcel = (data: ExportData) => {
   // Generate Excel file
   const excelBuffer = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
   const blob = new Blob([excelBuffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
-  saveAs(blob, 'Investment_Plan.xlsx');
+  const fileName = data.selectedInvestment ? 
+    `${data.selectedInvestment.name.replace(/\s+/g, '_')}_Strategy.xlsx` : 
+    'Investment_Plan.xlsx';
+  saveAs(blob, fileName);
 };
 
 export const exportToPDF = async (elementId: string, fileName: string = 'Investment_Plan.pdf') => {
