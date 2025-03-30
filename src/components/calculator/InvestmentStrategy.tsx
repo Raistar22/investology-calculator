@@ -1,10 +1,9 @@
-
 import React from 'react';
 import { Doughnut } from 'react-chartjs-2';
 import {
   Chart as ChartJS,
   ArcElement,
-  Tooltip,
+  Tooltip as ChartTooltip,
   Legend
 } from 'chart.js';
 import { Badge } from '@/components/ui/badge';
@@ -13,11 +12,11 @@ import { Progress } from '@/components/ui/progress';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ArrowRight, Check, Info, Target, TrendingUp, AlertTriangle, BarChart, FileText } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Tooltip as UITooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { cn } from '@/lib/utils';
 
 // Register required Chart.js components for Doughnut chart
-ChartJS.register(ArcElement, Tooltip, Legend);
+ChartJS.register(ArcElement, ChartTooltip, Legend);
 
 interface InvestmentStrategyProps {
   isi: number;
@@ -45,7 +44,6 @@ const InvestmentStrategy: React.FC<InvestmentStrategyProps> = ({
   monthlyInvestmentAmount,
   onRegenerate
 }) => {
-  // Create chart data
   const chartData = {
     labels: Object.keys(assetAllocation).filter(key => assetAllocation[key] > 0),
     datasets: [
@@ -103,7 +101,6 @@ const InvestmentStrategy: React.FC<InvestmentStrategyProps> = ({
     }
   };
   
-  // Risk profile text
   const getRiskProfileText = () => {
     if (riskScore <= 3) return "Conservative";
     if (riskScore <= 7) return "Moderate";
@@ -131,7 +128,6 @@ const InvestmentStrategy: React.FC<InvestmentStrategyProps> = ({
           </div>
         </CardHeader>
         <CardContent className="space-y-6">
-          {/* Summary Section */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <Card className="bg-primary/5">
               <CardContent className="p-4">
@@ -181,7 +177,6 @@ const InvestmentStrategy: React.FC<InvestmentStrategyProps> = ({
             </Card>
           </div>
           
-          {/* Income Categories Section */}
           <div>
             <h3 className="text-lg font-medium mb-2">Income Distribution</h3>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -209,7 +204,6 @@ const InvestmentStrategy: React.FC<InvestmentStrategyProps> = ({
             </div>
           </div>
           
-          {/* Asset Allocation Chart */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
               <h3 className="text-lg font-medium mb-4">Asset Allocation</h3>
@@ -262,7 +256,6 @@ const InvestmentStrategy: React.FC<InvestmentStrategyProps> = ({
             </div>
           </div>
           
-          {/* Tabs for Additional Information */}
           <Tabs defaultValue="recommendations">
             <TabsList className="grid grid-cols-2">
               <TabsTrigger value="recommendations" className="flex items-center gap-1">
