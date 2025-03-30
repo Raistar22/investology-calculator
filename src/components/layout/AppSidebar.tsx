@@ -64,17 +64,17 @@ export const AppSidebar = () => {
 
   return (
     <div
-      className="fixed left-0 top-0 h-full z-40 flex"
+      className="fixed left-0 top-0 h-full z-50 flex"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
       {/* Hover area */}
-      <div className="w-2 h-full bg-transparent hover:bg-primary/10 transition-colors duration-300" />
+      <div className="w-2 h-full bg-transparent hover:bg-primary/10 transition-colors duration-500" />
       
       {/* Sidebar */}
       <div
         className={cn(
-          "bg-card border-r border-border shadow-lg h-full overflow-hidden transition-all duration-300 flex flex-col",
+          "bg-card border-r border-border shadow-lg h-full overflow-hidden transition-all duration-700 ease-in-out flex flex-col",
           isHovered ? "w-64" : "w-0"
         )}
       >
