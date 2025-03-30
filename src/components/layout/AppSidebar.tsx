@@ -1,6 +1,6 @@
 
-import React, { useState } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Home, Calculator, LineChart, Briefcase, PiggyBank, DollarSign } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -53,6 +53,7 @@ const sidebarLinks: SidebarLink[] = [
 export const AppSidebar = () => {
   const [isHovered, setIsHovered] = useState(false);
   const location = useLocation();
+  const navigate = useNavigate();
 
   const isActive = (path: string) => {
     if (path.includes('#')) {
@@ -60,6 +61,22 @@ export const AppSidebar = () => {
       return location.pathname === route && location.hash === `#${hash}`;
     }
     return location.pathname === path;
+  };
+
+  const handleNavigate = (path: string) => {
+    if (path.includes('#')) {
+      const [route, hash] = path.split('#');
+      
+      // If we're already on the correct route, just update the hash
+      if (location.pathname === route) {
+        window.location.hash = hash;
+      } else {
+        // Navigate to the route with the hash
+        navigate(`${route}#${hash}`);
+      }
+    } else {
+      navigate(path);
+    }
   };
 
   return (
@@ -89,10 +106,10 @@ export const AppSidebar = () => {
           <ul className="space-y-1 px-2">
             {sidebarLinks.map((link) => (
               <li key={link.path}>
-                <Link
-                  to={link.path}
+                <button
+                  onClick={() => handleNavigate(link.path)}
                   className={cn(
-                    "flex items-center gap-3 px-3 py-2 rounded-md transition-colors group hover:bg-accent",
+                    "w-full text-left flex items-center gap-3 px-3 py-2 rounded-md transition-colors group hover:bg-accent",
                     isActive(link.path) ? "bg-primary/10 text-primary" : "text-foreground"
                   )}
                 >
@@ -104,7 +121,7 @@ export const AppSidebar = () => {
                     <div className="font-medium">{link.label}</div>
                     <p className="text-xs text-muted-foreground">{link.description}</p>
                   </div>
-                </Link>
+                </button>
               </li>
             ))}
           </ul>
