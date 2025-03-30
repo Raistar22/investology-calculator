@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { Home, Calculator, LineChart, Briefcase, PiggyBank, DollarSign } from 'lucide-react';
+import { Home, Calculator, LineChart, Briefcase, PiggyBank, DollarSign, FileText } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 type SidebarLink = {
@@ -23,6 +23,12 @@ const sidebarLinks: SidebarLink[] = [
     label: 'Calculator',
     path: '/calculator',
     description: 'Tax and investment calculator'
+  },
+  {
+    icon: FileText,
+    label: 'AI Strategy',
+    path: '/calculator#algorithm',
+    description: 'AI-powered investment algorithm'
   },
   {
     icon: LineChart,

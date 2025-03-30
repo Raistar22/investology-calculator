@@ -1,5 +1,6 @@
+
 import React, { useState, useEffect, useRef } from 'react';
-import { Calculator as CalculatorIcon, Download } from 'lucide-react';
+import { Calculator as CalculatorIcon, Download, FileText } from 'lucide-react';
 import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
 import TaxRegimeSelector from '@/components/calculator/TaxRegimeSelector';
@@ -11,8 +12,15 @@ import StockMarketData from '@/components/calculator/StockMarketData';
 import RetirementDashboard from '@/components/calculator/retirement/RetirementDashboard';
 import PensionWithdrawalPlanner from '@/components/calculator/PensionWithdrawalPlanner';
 import ExportOptions from '@/components/calculator/ExportOptions';
+import InvestorProfileForm from '@/components/calculator/InvestorProfileForm';
+import InvestmentStrategy from '@/components/calculator/InvestmentStrategy';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
+import { 
+  InvestorProfile, 
+  generateInvestmentStrategy, 
+  IncomeSource as AlgorithmIncomeSource 
+} from '@/utils/investmentAlgorithm';
 
 const Calculator = () => {
   const [selectedRegime, setSelectedRegime] = useState<'old' | 'new' | null>(null);
@@ -24,10 +32,31 @@ const Calculator = () => {
   const [totalReturns, setTotalReturns] = useState<number>(0);
   const [timeHorizon, setTimeHorizon] = useState<number>(10);
   
+  // New states for the investment algorithm
+  const [showAlgorithmForm, setShowAlgorithmForm] = useState<boolean>(false);
+  const [investorProfile, setInvestorProfile] = useState<InvestorProfile | null>(null);
+  const [investmentStrategy, setInvestmentStrategy] = useState<any>(null);
+  
+  // Refs for section navigation
+  const algorithmSectionRef = useRef<HTMLDivElement>(null);
+  
   useEffect(() => {
     const total = incomeSources.reduce((sum, source) => sum + (source.amount || 0), 0);
     setTotalIncome(total);
   }, [incomeSources]);
+  
+  useEffect(() => {
+    // Check if URL has a hash and scroll to that section
+    if (window.location.hash) {
+      const hash = window.location.hash.substring(1);
+      setTimeout(() => {
+        const element = document.getElementById(hash);
+        if (element) {
+          element.scrollIntoView({ behavior: 'smooth' });
+        }
+      }, 100);
+    }
+  }, []);
   
   const handleRegimeSelect = (regime: 'old' | 'new') => {
     setSelectedRegime(regime);
@@ -50,6 +79,37 @@ const Calculator = () => {
     setTimeHorizon(years);
   };
   
+  const handleShowAlgorithmForm = () => {
+    setShowAlgorithmForm(true);
+    setTimeout(() => {
+      if (algorithmSectionRef.current) {
+        algorithmSectionRef.current.scrollIntoView({ behavior: 'smooth' });
+      }
+    }, 100);
+  };
+  
+  const handleProfileUpdate = (profile: InvestorProfile) => {
+    setInvestorProfile(profile);
+    
+    // Convert income sources to the algorithm format if needed
+    const algorithmIncomeSources: AlgorithmIncomeSource[] = profile.incomeSources;
+    
+    // Generate the investment strategy
+    const strategy = generateInvestmentStrategy(
+      profile,
+      totalIncome,
+      totalIncome * 0.3 // 30% of annual income for investment
+    );
+    
+    setInvestmentStrategy(strategy);
+  };
+  
+  const handleRegenerateStrategy = () => {
+    if (investorProfile) {
+      handleProfileUpdate(investorProfile);
+    }
+  };
+  
   const recommendedMonthlyInvestment = Math.round((totalIncome * 0.3) / 12);
 
   return (
@@ -70,7 +130,7 @@ const Calculator = () => {
             </p>
           </div>
           
-          <div id="investment-summary" className="space-y-8">
+          <div className="space-y-8">
             <TaxRegimeSelector
               onSelect={handleRegimeSelect}
               selectedRegime={selectedRegime}
@@ -79,24 +139,70 @@ const Calculator = () => {
             <IncomeSourcesForm onUpdate={handleIncomeUpdate} />
             
             {totalIncome > 0 && (
-              <InvestmentRecommendationsWithExport
-                incomeTotal={totalIncome}
-                onSelect={handleInvestmentSelect}
-                selectedOption={selectedInvestment}
-                incomeSources={incomeSources}
-                taxRegime={selectedRegime}
-                recommendedMonthlyInvestment={recommendedMonthlyInvestment}
-                timeHorizon={timeHorizon}
-              />
+              <div className="flex justify-center">
+                <Button 
+                  variant="default" 
+                  size="lg" 
+                  onClick={handleShowAlgorithmForm}
+                  className="flex items-center gap-2"
+                >
+                  <FileText className="h-5 w-5" />
+                  Generate AI-Powered Investment Strategy
+                </Button>
+              </div>
             )}
             
-            <ReturnCalculator
-              selectedInvestment={selectedInvestment}
-              recommendedMonthly={recommendedMonthlyInvestment}
-              onCalculate={handleReturnCalculation}
-            />
+            {/* AI Investment Algorithm Section */}
+            <div id="algorithm" ref={algorithmSectionRef}>
+              {showAlgorithmForm && totalIncome > 0 && (
+                <>
+                  {!investmentStrategy ? (
+                    <InvestorProfileForm 
+                      initialIncomeSources={incomeSources.map(source => ({
+                        type: source.type as any || 'other',
+                        amount: source.amount,
+                        frequency: 'monthly',
+                        stability: 7
+                      }))}
+                      totalIncome={totalIncome}
+                      onProfileUpdate={handleProfileUpdate}
+                    />
+                  ) : (
+                    <InvestmentStrategy 
+                      isi={investmentStrategy.isi}
+                      incomeCategories={investmentStrategy.incomeCategories}
+                      riskScore={investmentStrategy.riskScore}
+                      assetAllocation={investmentStrategy.assetAllocation}
+                      specificRecommendations={investmentStrategy.specificRecommendations}
+                      taxSuggestions={investmentStrategy.taxSuggestions}
+                      monthlyInvestmentAmount={recommendedMonthlyInvestment}
+                      onRegenerate={handleRegenerateStrategy}
+                    />
+                  )}
+                </>
+              )}
+            </div>
             
-            <ExportOptions
+            <div id="investment-summary">
+              {totalIncome > 0 && (
+                <InvestmentRecommendationsWithExport
+                  incomeTotal={totalIncome}
+                  onSelect={handleInvestmentSelect}
+                  selectedOption={selectedInvestment}
+                  incomeSources={incomeSources}
+                  taxRegime={selectedRegime}
+                  recommendedMonthlyInvestment={recommendedMonthlyInvestment}
+                  timeHorizon={timeHorizon}
+                />
+              )}
+              
+              <ReturnCalculator
+                selectedInvestment={selectedInvestment}
+                recommendedMonthly={recommendedMonthlyInvestment}
+                onCalculate={handleReturnCalculation}
+              />
+              
+              <ExportOptions
                 taxRegime={selectedRegime}
                 incomeSources={incomeSources}
                 totalIncome={totalIncome}
@@ -107,23 +213,34 @@ const Calculator = () => {
                 totalInvested={totalInvested}
                 totalReturns={totalReturns}
               />
+            </div>
             
-            <StockMarketData />
+            <div id="analytics">
+              <StockMarketData />
+            </div>
             
-            {totalIncome > 0 && (
-              <PensionWithdrawalPlanner
-                currentIncome={totalIncome}
-                pensionCorpus={totalIncome * 10}
-              />
-            )}
+            <div id="portfolio">
+              {totalIncome > 0 && (
+                <PensionWithdrawalPlanner
+                  currentIncome={totalIncome}
+                  pensionCorpus={totalIncome * 10}
+                />
+              )}
+            </div>
             
-            {totalIncome > 0 && (
-              <RetirementDashboard
-                currentIncome={totalIncome}
-                selectedInvestment={selectedInvestment}
-                recommendedMonthlyInvestment={recommendedMonthlyInvestment}
-              />
-            )}
+            <div id="retirement">
+              {totalIncome > 0 && (
+                <RetirementDashboard
+                  currentIncome={totalIncome}
+                  selectedInvestment={selectedInvestment}
+                  recommendedMonthlyInvestment={recommendedMonthlyInvestment}
+                />
+              )}
+            </div>
+            
+            <div id="tax-regime">
+              {/* Any additional tax planning content can go here */}
+            </div>
           </div>
         </div>
       </main>
