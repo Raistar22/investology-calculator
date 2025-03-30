@@ -1,7 +1,8 @@
+
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { cn } from '@/lib/utils';
-import { Calculator, Home, Menu, X, LogIn, Github, User } from 'lucide-react';
+import { Calculator, Home, Menu, X, LogIn, Github, User, FileText } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { 
   DropdownMenu,
@@ -45,6 +46,7 @@ const Navbar = () => {
   const navLinks = [
     { name: 'Home', path: '/', icon: <Home className="h-4 w-4 mr-1" /> },
     { name: 'Calculator', path: '/calculator', icon: <Calculator className="h-4 w-4 mr-1" /> },
+    { name: 'ITR Filing', path: '/itr-filing', icon: <FileText className="h-4 w-4 mr-1" /> },
   ];
 
   return (
