@@ -14,6 +14,7 @@ import PensionWithdrawalPlanner from '@/components/calculator/PensionWithdrawalP
 import ExportOptions from '@/components/calculator/ExportOptions';
 import InvestorProfileForm from '@/components/calculator/InvestorProfileForm';
 import InvestmentStrategy from '@/components/calculator/InvestmentStrategy';
+import OpenAIKeyInput from '@/components/calculator/OpenAIKeyInput';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { 
@@ -21,6 +22,7 @@ import {
   generateInvestmentStrategy, 
   IncomeSource as AlgorithmIncomeSource 
 } from '@/utils/investmentAlgorithm';
+import { generateOpenAIInvestmentStrategy } from '@/utils/openaiService';
 
 const Calculator = () => {
   const [selectedRegime, setSelectedRegime] = useState<'old' | 'new' | null>(null);
@@ -37,8 +39,13 @@ const Calculator = () => {
   const [investorProfile, setInvestorProfile] = useState<InvestorProfile | null>(null);
   const [investmentStrategy, setInvestmentStrategy] = useState<any>(null);
   
+  // New states for OpenAI integration
+  const [showApiKeyInput, setShowApiKeyInput] = useState<boolean>(false);
+  const [isGeneratingAIStrategy, setIsGeneratingAIStrategy] = useState<boolean>(false);
+  
   // Refs for section navigation
   const algorithmSectionRef = useRef<HTMLDivElement>(null);
+  const openAISectionRef = useRef<HTMLDivElement>(null);
   
   useEffect(() => {
     const total = incomeSources.reduce((sum, source) => sum + (source.amount || 0), 0);
@@ -81,9 +88,20 @@ const Calculator = () => {
   
   const handleShowAlgorithmForm = () => {
     setShowAlgorithmForm(true);
+    setShowApiKeyInput(false);
     setTimeout(() => {
       if (algorithmSectionRef.current) {
         algorithmSectionRef.current.scrollIntoView({ behavior: 'smooth' });
+      }
+    }, 100);
+  };
+  
+  const handleShowOpenAIInput = () => {
+    setShowApiKeyInput(true);
+    setShowAlgorithmForm(false);
+    setTimeout(() => {
+      if (openAISectionRef.current) {
+        openAISectionRef.current.scrollIntoView({ behavior: 'smooth' });
       }
     }, 100);
   };
@@ -107,6 +125,36 @@ const Calculator = () => {
   const handleRegenerateStrategy = () => {
     if (investorProfile) {
       handleProfileUpdate(investorProfile);
+    }
+  };
+  
+  const handleOpenAIGenerate = async (apiKey: string) => {
+    if (!investorProfile) {
+      toast.error('Please fill out your investor profile first');
+      setShowAlgorithmForm(true);
+      setShowApiKeyInput(false);
+      return;
+    }
+    
+    setIsGeneratingAIStrategy(true);
+    
+    try {
+      const aiStrategy = await generateOpenAIInvestmentStrategy(
+        apiKey,
+        investorProfile,
+        totalIncome,
+        totalIncome * 0.3 // 30% of annual income for investment
+      );
+      
+      if (aiStrategy) {
+        setInvestmentStrategy(aiStrategy);
+        toast.success('AI-powered investment strategy generated successfully');
+      }
+    } catch (error) {
+      console.error('Error generating AI strategy:', error);
+      toast.error('Failed to generate AI strategy. Please try again.');
+    } finally {
+      setIsGeneratingAIStrategy(false);
     }
   };
   
@@ -139,7 +187,7 @@ const Calculator = () => {
             <IncomeSourcesForm onUpdate={handleIncomeUpdate} />
             
             {totalIncome > 0 && (
-              <div className="flex justify-center">
+              <div className="flex flex-col sm:flex-row justify-center gap-3">
                 <Button 
                   variant="default" 
                   size="lg" 
@@ -147,10 +195,51 @@ const Calculator = () => {
                   className="flex items-center gap-2"
                 >
                   <FileText className="h-5 w-5" />
-                  Generate AI-Powered Investment Strategy
+                  Generate Standard Investment Strategy
+                </Button>
+                <Button 
+                  variant="outline" 
+                  size="lg" 
+                  onClick={handleShowOpenAIInput}
+                  className="flex items-center gap-2"
+                >
+                  <CalculatorIcon className="h-5 w-5" />
+                  Generate AI-Powered Strategy
                 </Button>
               </div>
             )}
+            
+            {/* OpenAI API Key Input Section */}
+            <div id="openai" ref={openAISectionRef}>
+              {showApiKeyInput && totalIncome > 0 && (
+                <>
+                  <OpenAIKeyInput 
+                    onSubmit={handleOpenAIGenerate}
+                    isLoading={isGeneratingAIStrategy}
+                  />
+                  
+                  {!investorProfile && (
+                    <div className="mt-4 p-4 bg-primary/5 rounded-lg">
+                      <p className="text-center text-muted-foreground">
+                        You need to create your investor profile first. Please fill out the form below:
+                      </p>
+                      <div className="mt-4">
+                        <InvestorProfileForm 
+                          initialIncomeSources={incomeSources.map(source => ({
+                            type: source.type as any || 'other',
+                            amount: source.amount,
+                            frequency: 'monthly',
+                            stability: 7
+                          }))}
+                          totalIncome={totalIncome}
+                          onProfileUpdate={handleProfileUpdate}
+                        />
+                      </div>
+                    </div>
+                  )}
+                </>
+              )}
+            </div>
             
             {/* AI Investment Algorithm Section */}
             <div id="algorithm" ref={algorithmSectionRef}>
