@@ -1,9 +1,9 @@
-
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 import { Calculator, Home, Menu, X, LogIn, Github, User, FileText } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { ThemeToggle } from '../theme/ThemeToggle';
 import { 
   DropdownMenu,
   DropdownMenuContent,
@@ -67,7 +67,6 @@ const Navbar = () => {
           </span>
         </Link>
         
-        {/* Desktop Navigation */}
         <nav className="hidden md:flex items-center space-x-8">
           {navLinks.map((link) => (
             <Link
@@ -88,6 +87,8 @@ const Navbar = () => {
               <div className="absolute -bottom-1 left-0 right-0 h-0.5 bg-primary scale-x-0 group-hover:scale-x-100 transition-transform origin-left rounded-full" />
             </Link>
           ))}
+          
+          <ThemeToggle />
           
           {isLoggedIn ? (
             <DropdownMenu>
@@ -129,7 +130,6 @@ const Navbar = () => {
           )}
         </nav>
         
-        {/* Mobile menu button */}
         <button 
           className="md:hidden flex items-center"
           onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
@@ -143,7 +143,6 @@ const Navbar = () => {
         </button>
       </div>
       
-      {/* Mobile Navigation */}
       {isMobileMenuOpen && (
         <nav className="md:hidden glass mt-2 rounded-xl p-4 mx-4 animate-fade-in">
           <div className="flex flex-col space-y-3">
