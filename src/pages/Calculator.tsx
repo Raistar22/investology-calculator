@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect, useRef } from 'react';
 import { Calculator as CalculatorIcon, Download, FileText } from 'lucide-react';
 import Navbar from '@/components/layout/Navbar';
@@ -13,7 +14,6 @@ import PensionWithdrawalPlanner from '@/components/calculator/PensionWithdrawalP
 import ExportOptions from '@/components/calculator/ExportOptions';
 import InvestorProfileForm from '@/components/calculator/InvestorProfileForm';
 import InvestmentStrategy from '@/components/calculator/InvestmentStrategy';
-import OpenAIKeyInput from '@/components/calculator/OpenAIKeyInput';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { 
@@ -94,24 +94,59 @@ const Calculator = () => {
   };
   
   const handleShowOpenAIInput = async () => {
-    if (!investorProfile) {
-      toast.error('Please fill out your investor profile first');
-      setShowAlgorithmForm(true);
+    if (totalIncome <= 0) {
+      toast.error('Please add your income sources first');
       return;
     }
     
     setIsGeneratingAIStrategy(true);
     
     try {
+      // Create a default investor profile if none exists
+      const defaultProfile: InvestorProfile = investorProfile || {
+        incomeSources: incomeSources.map(source => ({
+          type: source.type as any || 'other',
+          amount: source.amount,
+          frequency: 'monthly',
+          stability: 7
+        })),
+        riskTolerance: 'medium',
+        liquidityPreference: 'flexible',
+        investmentExperience: 'beginner',
+        financialGoals: [
+          { type: 'short_term', targetAmount: totalIncome * 0.5, timeframe: 2, priority: 7 },
+          { type: 'long_term', targetAmount: totalIncome * 5, timeframe: 10, priority: 9 }
+        ],
+        currentMarketTrends: {
+          stockPerformance: 6,
+          cryptoVolatility: 7,
+          bondYields: 5.5,
+          inflationRate: 6.2
+        }
+      };
+      
+      // If no profile exists, set this default one
+      if (!investorProfile) {
+        setInvestorProfile(defaultProfile);
+      }
+      
       const aiStrategy = await generateOpenAIInvestmentStrategy(
-        investorProfile,
+        defaultProfile,
         totalIncome,
         totalIncome * 0.3 // 30% of annual income for investment
       );
       
       if (aiStrategy) {
         setInvestmentStrategy(aiStrategy);
+        setShowAlgorithmForm(true); // Make sure the algorithm section is shown
         toast.success('AI-powered investment strategy generated successfully');
+        
+        // Scroll to the strategy section
+        setTimeout(() => {
+          if (algorithmSectionRef.current) {
+            algorithmSectionRef.current.scrollIntoView({ behavior: 'smooth' });
+          }
+        }, 100);
       }
     } catch (error) {
       console.error('Error generating AI strategy:', error);
@@ -194,8 +229,6 @@ const Calculator = () => {
                 </Button>
               </div>
             )}
-            
-            {/* Remove the OpenAI API Key Input section */}
             
             {/* AI Investment Algorithm Section */}
             <div id="algorithm" ref={algorithmSectionRef}>
