@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useRef } from 'react';
 import { Calculator as CalculatorIcon, Download, FileText } from 'lucide-react';
 import Navbar from '@/components/layout/Navbar';
@@ -40,7 +39,6 @@ const Calculator = () => {
   const [investmentStrategy, setInvestmentStrategy] = useState<any>(null);
   
   // New states for OpenAI integration
-  const [showApiKeyInput, setShowApiKeyInput] = useState<boolean>(false);
   const [isGeneratingAIStrategy, setIsGeneratingAIStrategy] = useState<boolean>(false);
   
   // Refs for section navigation
@@ -88,7 +86,6 @@ const Calculator = () => {
   
   const handleShowAlgorithmForm = () => {
     setShowAlgorithmForm(true);
-    setShowApiKeyInput(false);
     setTimeout(() => {
       if (algorithmSectionRef.current) {
         algorithmSectionRef.current.scrollIntoView({ behavior: 'smooth' });
@@ -96,14 +93,32 @@ const Calculator = () => {
     }, 100);
   };
   
-  const handleShowOpenAIInput = () => {
-    setShowApiKeyInput(true);
-    setShowAlgorithmForm(false);
-    setTimeout(() => {
-      if (openAISectionRef.current) {
-        openAISectionRef.current.scrollIntoView({ behavior: 'smooth' });
+  const handleShowOpenAIInput = async () => {
+    if (!investorProfile) {
+      toast.error('Please fill out your investor profile first');
+      setShowAlgorithmForm(true);
+      return;
+    }
+    
+    setIsGeneratingAIStrategy(true);
+    
+    try {
+      const aiStrategy = await generateOpenAIInvestmentStrategy(
+        investorProfile,
+        totalIncome,
+        totalIncome * 0.3 // 30% of annual income for investment
+      );
+      
+      if (aiStrategy) {
+        setInvestmentStrategy(aiStrategy);
+        toast.success('AI-powered investment strategy generated successfully');
       }
-    }, 100);
+    } catch (error) {
+      console.error('Error generating AI strategy:', error);
+      toast.error('Failed to generate AI strategy. Please try again.');
+    } finally {
+      setIsGeneratingAIStrategy(false);
+    }
   };
   
   const handleProfileUpdate = (profile: InvestorProfile) => {
@@ -125,36 +140,6 @@ const Calculator = () => {
   const handleRegenerateStrategy = () => {
     if (investorProfile) {
       handleProfileUpdate(investorProfile);
-    }
-  };
-  
-  const handleOpenAIGenerate = async (apiKey: string) => {
-    if (!investorProfile) {
-      toast.error('Please fill out your investor profile first');
-      setShowAlgorithmForm(true);
-      setShowApiKeyInput(false);
-      return;
-    }
-    
-    setIsGeneratingAIStrategy(true);
-    
-    try {
-      const aiStrategy = await generateOpenAIInvestmentStrategy(
-        apiKey,
-        investorProfile,
-        totalIncome,
-        totalIncome * 0.3 // 30% of annual income for investment
-      );
-      
-      if (aiStrategy) {
-        setInvestmentStrategy(aiStrategy);
-        toast.success('AI-powered investment strategy generated successfully');
-      }
-    } catch (error) {
-      console.error('Error generating AI strategy:', error);
-      toast.error('Failed to generate AI strategy. Please try again.');
-    } finally {
-      setIsGeneratingAIStrategy(false);
     }
   };
   
@@ -202,44 +187,15 @@ const Calculator = () => {
                   size="lg" 
                   onClick={handleShowOpenAIInput}
                   className="flex items-center gap-2"
+                  disabled={isGeneratingAIStrategy}
                 >
                   <CalculatorIcon className="h-5 w-5" />
-                  Generate AI-Powered Strategy
+                  {isGeneratingAIStrategy ? 'Generating AI Strategy...' : 'Generate AI Strategy'}
                 </Button>
               </div>
             )}
             
-            {/* OpenAI API Key Input Section */}
-            <div id="openai" ref={openAISectionRef}>
-              {showApiKeyInput && totalIncome > 0 && (
-                <>
-                  <OpenAIKeyInput 
-                    onSubmit={handleOpenAIGenerate}
-                    isLoading={isGeneratingAIStrategy}
-                  />
-                  
-                  {!investorProfile && (
-                    <div className="mt-4 p-4 bg-primary/5 rounded-lg">
-                      <p className="text-center text-muted-foreground">
-                        You need to create your investor profile first. Please fill out the form below:
-                      </p>
-                      <div className="mt-4">
-                        <InvestorProfileForm 
-                          initialIncomeSources={incomeSources.map(source => ({
-                            type: source.type as any || 'other',
-                            amount: source.amount,
-                            frequency: 'monthly',
-                            stability: 7
-                          }))}
-                          totalIncome={totalIncome}
-                          onProfileUpdate={handleProfileUpdate}
-                        />
-                      </div>
-                    </div>
-                  )}
-                </>
-              )}
-            </div>
+            {/* Remove the OpenAI API Key Input section */}
             
             {/* AI Investment Algorithm Section */}
             <div id="algorithm" ref={algorithmSectionRef}>

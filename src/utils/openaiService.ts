@@ -1,4 +1,3 @@
-
 import { toast } from 'sonner';
 import { InvestorProfile } from './investmentAlgorithm';
 
@@ -10,17 +9,14 @@ interface OpenAIResponse {
   }[];
 }
 
+const OPENAI_API_KEY = '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';
+
 export const generateOpenAIInvestmentStrategy = async (
-  apiKey: string,
   profile: InvestorProfile,
   totalIncome: number,
   investmentAmount: number
 ): Promise<any> => {
   try {
-    if (!apiKey || apiKey.trim() === '') {
-      throw new Error('OpenAI API key is required');
-    }
-
     const prompt = `
       As a financial advisor, provide an investment strategy based on the following profile:
       
@@ -80,7 +76,7 @@ export const generateOpenAIInvestmentStrategy = async (
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${apiKey}`
+        'Authorization': `Bearer ${OPENAI_API_KEY}`
       },
       body: JSON.stringify({
         model: 'gpt-4o',
