@@ -4,7 +4,7 @@ import { MessageCircle, Bot } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import OptionButtons from "./OptionButtons";
 import { useToast } from "@/hooks/use-toast";
-import { fetchPerplexity } from "@/utils/perplexity";
+import { fetchGemini } from "@/utils/gemini";
 
 const SUGGESTED_QUESTIONS = [
   "What are tax-saving investment options?",
@@ -23,7 +23,10 @@ const FinanceChatbot: React.FC = () => {
   const [open, setOpen] = useState(false);
   const [input, setInput] = useState("");
   const [messages, setMessages] = useState<ChatMessage[]>([
-    { from: "bot", text: "Hi! Ask me anything about personal finance, taxes, or investments. You can also select a question below." },
+    {
+      from: "bot",
+      text: "Hi! Ask me anything about personal finance, taxes, or investments. You can also select a question below.",
+    },
   ]);
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
@@ -41,16 +44,10 @@ const FinanceChatbot: React.FC = () => {
     setMessages((prev) => [...prev, { from: "user", text: trimmedQuestion }]);
     setIsLoading(true);
     setInput("");
-
-    const perplexityKey = localStorage.getItem("perplexity_api_key");
     let botReply = "";
 
     try {
-      if (perplexityKey) {
-        botReply = await fetchPerplexity(trimmedQuestion, perplexityKey);
-      } else {
-        botReply = getSiteBotReply(trimmedQuestion);
-      }
+      botReply = await fetchGemini(trimmedQuestion);
     } catch (err) {
       console.error(err);
       toast({
@@ -63,24 +60,6 @@ const FinanceChatbot: React.FC = () => {
     setMessages((prev) => [...prev, { from: "bot", text: botReply }]);
     setIsLoading(false);
   };
-
-  function getSiteBotReply(q: string) {
-    const qLower = q.toLowerCase();
-    if (qLower.includes("retirement")) {
-      return "Planning for retirement involves estimating your future expenses, investing in tax-efficient vehicles like PPF, EPF, NPS, and reviewing your plan regularly.";
-    } else if (qLower.includes("tax regime")) {
-      return "India's new tax regime offers lower rates with fewer deductions, while the old regime allows more deductions like 80C, 80D, HRA, etc.";
-    } else if (qLower.includes("tax-saving")) {
-      return "Popular tax-saving options include EPF, PPF, ELSS mutual funds, NPS, insurance premiums, and home loan principal repayment.";
-    } else if (qLower.includes("portfolio")) {
-      return "A diversified portfolio includes equity, debt, and real assets such as real estate and gold. Aim for a balance based on your risk appetite.";
-    } else if (qLower.includes("investment")) {
-      return "Investment options include mutual funds, stocks, fixed deposits, bonds, real estate, and SIPs. Assess your risk before investing.";
-    } else if (qLower.includes("latest news")) {
-      return "Connect your Perplexity API key to get the latest finance news from the internet!";
-    }
-    return "Sorry, I can answer only general finance queries without internet access. Please try connecting the Perplexity API for real-time information.";
-  }
 
   return (
     <div>
@@ -126,7 +105,9 @@ const FinanceChatbot: React.FC = () => {
             <div ref={messagesEndRef} />
           </div>
           {isLoading && (
-            <div className="px-4 py-2 text-muted-foreground text-xs">FinanceBot is typing...</div>
+            <div className="px-4 py-2 text-muted-foreground text-xs">
+              FinanceBot is typing...
+            </div>
           )}
           {/* Options */}
           <div className="px-3 pb-2">
@@ -168,7 +149,7 @@ const FinanceChatbot: React.FC = () => {
             </Button>
           </form>
           <div className="text-[0.71rem] text-muted-foreground mb-2 px-3">
-            For live answers, connect your Perplexity API key in localStorage (<code>perplexity_api_key</code>).
+            All responses powered by Google Gemini.
           </div>
         </div>
       )}
