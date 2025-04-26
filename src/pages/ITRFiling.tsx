@@ -9,6 +9,42 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Separator } from '@/components/ui/separator';
 import { toast } from 'sonner';
 import { FileText, Upload, FilePlus, Check, Calendar, DownloadCloud, FileCheck } from 'lucide-react';
+import {
+  Dialog,
+  DialogTrigger,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter
+} from '@/components/ui/dialog';
+
+const DOCUMENT_TYPES = [
+  {
+    key: 'form16',
+    label: 'Form 16',
+    description: 'Salary certificate from employer',
+    icon: FileText
+  },
+  {
+    key: 'investmentProofs',
+    label: 'Investment Proofs',
+    description: '80C, 80D, and other deductions',
+    icon: FileText
+  },
+  {
+    key: 'bankStatements',
+    label: 'Bank Statements',
+    description: 'Last financial year statements',
+    icon: Calendar
+  },
+  {
+    key: 'otherDocs',
+    label: 'Other Documents',
+    description: 'Additional supporting documents',
+    icon: FilePlus
+  }
+];
 
 const ITRFiling = () => {
   const [activeTab, setActiveTab] = useState('information');
@@ -22,6 +58,19 @@ const ITRFiling = () => {
     grossIncome: '',
     taxDeducted: ''
   });
+
+  // Dialog & upload state
+  const [showUploadDialog, setShowUploadDialog] = useState(false);
+  const [uploadingDocType, setUploadingDocType] = useState<string | null>(null);
+  const [uploadedDocs, setUploadedDocs] = useState<{ [key: string]: File | null }>({
+    form16: null,
+    investmentProofs: null,
+    bankStatements: null,
+    otherDocs: null
+  });
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+
+  const [showFiledDialog, setShowFiledDialog] = useState(false);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { id, value } = e.target;
@@ -38,18 +87,45 @@ const ITRFiling = () => {
     setActiveTab('documents');
   };
 
-  const handleUpload = () => {
-    toast.success('Documents uploaded successfully!');
-    setActiveTab('review');
-  };
-
-  const handleFileITR = () => {
-    toast.success('Your ITR has been filed successfully!');
-  };
-
   const validateForm = () => {
-    return formData.name && formData.pan && formData.aadhaar && formData.dob && 
+    return formData.name && formData.pan && formData.aadhaar && formData.dob &&
            formData.grossIncome && formData.taxDeducted;
+  };
+
+  // ------ Document upload dialog actions -----
+  const openUploadDialog = (docType: string) => {
+    setUploadingDocType(docType);
+    setSelectedFile(null);
+    setShowUploadDialog(true);
+  };
+  const closeUploadDialog = () => {
+    setShowUploadDialog(false);
+    setUploadingDocType(null);
+    setSelectedFile(null);
+  };
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files.length > 0) {
+      setSelectedFile(e.target.files[0]);
+    }
+  };
+  const handleConfirmUpload = () => {
+    if (uploadingDocType && selectedFile) {
+      setUploadedDocs(prev => ({
+        ...prev,
+        [uploadingDocType]: selectedFile
+      }));
+      toast.success(`${DOCUMENT_TYPES.find(d => d.key === uploadingDocType)?.label} uploaded!`);
+      closeUploadDialog();
+    }
+  };
+
+  // ---- File ITR confirmation dialog ----
+  const handleFileITR = () => {
+    setShowFiledDialog(true);
+  };
+  const handleFiledDialogClose = () => {
+    setShowFiledDialog(false);
+    toast.success('Your ITR has been filed successfully!');
   };
 
   return (
@@ -106,44 +182,44 @@ const ITRFiling = () => {
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div className="space-y-2">
                       <Label htmlFor="name">Full Name (as per PAN)</Label>
-                      <Input 
-                        id="name" 
-                        placeholder="Enter your full name" 
+                      <Input
+                        id="name"
+                        placeholder="Enter your full name"
                         value={formData.name}
                         onChange={handleInputChange}
                       />
                     </div>
                     <div className="space-y-2">
                       <Label htmlFor="pan">PAN Number</Label>
-                      <Input 
-                        id="pan" 
-                        placeholder="e.g., ABCDE1234F" 
+                      <Input
+                        id="pan"
+                        placeholder="e.g., ABCDE1234F"
                         value={formData.pan}
                         onChange={handleInputChange}
                       />
                     </div>
                     <div className="space-y-2">
                       <Label htmlFor="aadhaar">Aadhaar Number</Label>
-                      <Input 
-                        id="aadhaar" 
-                        placeholder="e.g., 1234 5678 9012" 
+                      <Input
+                        id="aadhaar"
+                        placeholder="e.g., 1234 5678 9012"
                         value={formData.aadhaar}
                         onChange={handleInputChange}
                       />
                     </div>
                     <div className="space-y-2">
                       <Label htmlFor="dob">Date of Birth</Label>
-                      <Input 
-                        id="dob" 
-                        type="date" 
+                      <Input
+                        id="dob"
+                        type="date"
                         value={formData.dob}
                         onChange={handleInputChange}
                       />
                     </div>
                     <div className="space-y-2">
                       <Label htmlFor="assessmentYear">Assessment Year</Label>
-                      <Select 
-                        value={formData.assessmentYear} 
+                      <Select
+                        value={formData.assessmentYear}
                         onValueChange={(value) => handleSelectChange('assessmentYear', value)}
                       >
                         <SelectTrigger id="assessmentYear">
@@ -158,8 +234,8 @@ const ITRFiling = () => {
                     </div>
                     <div className="space-y-2">
                       <Label htmlFor="incomeSource">Primary Source of Income</Label>
-                      <Select 
-                        value={formData.incomeSource} 
+                      <Select
+                        value={formData.incomeSource}
                         onValueChange={(value) => handleSelectChange('incomeSource', value)}
                       >
                         <SelectTrigger id="incomeSource">
@@ -175,20 +251,20 @@ const ITRFiling = () => {
                     </div>
                     <div className="space-y-2">
                       <Label htmlFor="grossIncome">Gross Total Income (₹)</Label>
-                      <Input 
-                        id="grossIncome" 
-                        type="number" 
-                        placeholder="e.g., 1200000" 
+                      <Input
+                        id="grossIncome"
+                        type="number"
+                        placeholder="e.g., 1200000"
                         value={formData.grossIncome}
                         onChange={handleInputChange}
                       />
                     </div>
                     <div className="space-y-2">
                       <Label htmlFor="taxDeducted">TDS Amount (₹)</Label>
-                      <Input 
-                        id="taxDeducted" 
-                        type="number" 
-                        placeholder="e.g., 120000" 
+                      <Input
+                        id="taxDeducted"
+                        type="number"
+                        placeholder="e.g., 120000"
                         value={formData.taxDeducted}
                         onChange={handleInputChange}
                       />
@@ -206,69 +282,75 @@ const ITRFiling = () => {
                 <div className="bg-muted/50 rounded-lg p-6 space-y-4">
                   <h3 className="text-lg font-medium">Required Documents</h3>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <Card className="bg-background">
-                      <CardContent className="p-4 flex items-center gap-3">
-                        <div className="bg-primary/10 p-2 rounded-full">
-                          <FileText className="h-5 w-5 text-primary" />
-                        </div>
-                        <div className="flex-1">
-                          <h4 className="font-medium">Form 16</h4>
-                          <p className="text-sm text-muted-foreground">Salary certificate from employer</p>
-                        </div>
-                        <Button variant="outline" size="sm" className="gap-1">
-                          <Upload className="h-4 w-4" /> Upload
-                        </Button>
-                      </CardContent>
-                    </Card>
-                    <Card className="bg-background">
-                      <CardContent className="p-4 flex items-center gap-3">
-                        <div className="bg-primary/10 p-2 rounded-full">
-                          <FileText className="h-5 w-5 text-primary" />
-                        </div>
-                        <div className="flex-1">
-                          <h4 className="font-medium">Investment Proofs</h4>
-                          <p className="text-sm text-muted-foreground">80C, 80D, and other deductions</p>
-                        </div>
-                        <Button variant="outline" size="sm" className="gap-1">
-                          <Upload className="h-4 w-4" /> Upload
-                        </Button>
-                      </CardContent>
-                    </Card>
-                    <Card className="bg-background">
-                      <CardContent className="p-4 flex items-center gap-3">
-                        <div className="bg-primary/10 p-2 rounded-full">
-                          <Calendar className="h-5 w-5 text-primary" />
-                        </div>
-                        <div className="flex-1">
-                          <h4 className="font-medium">Bank Statements</h4>
-                          <p className="text-sm text-muted-foreground">Last financial year statements</p>
-                        </div>
-                        <Button variant="outline" size="sm" className="gap-1">
-                          <Upload className="h-4 w-4" /> Upload
-                        </Button>
-                      </CardContent>
-                    </Card>
-                    <Card className="bg-background">
-                      <CardContent className="p-4 flex items-center gap-3">
-                        <div className="bg-primary/10 p-2 rounded-full">
-                          <FilePlus className="h-5 w-5 text-primary" />
-                        </div>
-                        <div className="flex-1">
-                          <h4 className="font-medium">Other Documents</h4>
-                          <p className="text-sm text-muted-foreground">Additional supporting documents</p>
-                        </div>
-                        <Button variant="outline" size="sm" className="gap-1">
-                          <Upload className="h-4 w-4" /> Upload
-                        </Button>
-                      </CardContent>
-                    </Card>
+                    {DOCUMENT_TYPES.map((doc) => (
+                      <Card className="bg-background" key={doc.key}>
+                        <CardContent className="p-4 flex items-center gap-3">
+                          <div className="bg-primary/10 p-2 rounded-full">
+                            <doc.icon className="h-5 w-5 text-primary" />
+                          </div>
+                          <div className="flex-1">
+                            <h4 className="font-medium">{doc.label}</h4>
+                            <p className="text-sm text-muted-foreground">{doc.description}</p>
+                          </div>
+                          <Button
+                            variant={uploadedDocs[doc.key] ? 'default' : 'outline'}
+                            size="sm"
+                            className="gap-1"
+                            onClick={() => openUploadDialog(doc.key)}
+                          >
+                            <Upload className="h-4 w-4" />
+                            {uploadedDocs[doc.key] ? 'Replace' : 'Upload'}
+                          </Button>
+                        </CardContent>
+                      </Card>
+                    ))}
                   </div>
                 </div>
                 <div className="mt-8 flex justify-end">
-                  <Button onClick={handleUpload} className="flex items-center gap-2">
+                  <Button
+                    onClick={() => setActiveTab('review')}
+                    className="flex items-center gap-2"
+                    disabled={!Object.values(uploadedDocs).some(f => f)}
+                  >
                     Continue to Review <Check className="h-4 w-4" />
                   </Button>
                 </div>
+
+                {/* Document Upload Dialog */}
+                <Dialog open={showUploadDialog} onOpenChange={setShowUploadDialog}>
+                  <DialogContent>
+                    <DialogHeader>
+                      <DialogTitle>
+                        Upload {
+                          uploadingDocType
+                            ? DOCUMENT_TYPES.find(d => d.key === uploadingDocType)?.label
+                            : 'Document'
+                        }
+                      </DialogTitle>
+                      <DialogDescription>
+                        Please select the {
+                          uploadingDocType
+                            ? DOCUMENT_TYPES.find(d => d.key === uploadingDocType)?.label
+                            : 'document'
+                        } file to upload.
+                      </DialogDescription>
+                    </DialogHeader>
+                    <Input
+                      type="file"
+                      accept=".pdf,.jpg,.jpeg,.png"
+                      onChange={handleFileChange}
+                    />
+                    <DialogFooter>
+                      <Button variant="outline" onClick={closeUploadDialog}>Cancel</Button>
+                      <Button
+                        onClick={handleConfirmUpload}
+                        disabled={!selectedFile}
+                      >
+                        Upload
+                      </Button>
+                    </DialogFooter>
+                  </DialogContent>
+                </Dialog>
               </TabsContent>
 
               <TabsContent value="review" className="space-y-6 mt-2">
@@ -301,9 +383,9 @@ const ITRFiling = () => {
                       </div>
                       <div>
                         <p className="text-sm font-medium text-muted-foreground">Income Source</p>
-                        <p>{formData.incomeSource === 'salary' ? 'Salary' : 
-                           formData.incomeSource === 'business' ? 'Business/Profession' :
-                           formData.incomeSource === 'capital_gains' ? 'Capital Gains' : 'Other Sources'}</p>
+                        <p>{formData.incomeSource === 'salary' ? 'Salary' :
+                          formData.incomeSource === 'business' ? 'Business/Profession' :
+                          formData.incomeSource === 'capital_gains' ? 'Capital Gains' : 'Other Sources'}</p>
                       </div>
                       <div>
                         <p className="text-sm font-medium text-muted-foreground">Gross Income</p>
@@ -314,21 +396,20 @@ const ITRFiling = () => {
                         <p>₹{formData.taxDeducted}</p>
                       </div>
                     </div>
-                    
+
                     <Separator />
-                    
+
                     <div>
                       <p className="font-medium">Uploaded Documents</p>
                       <ul className="mt-2 space-y-1 text-sm">
-                        <li className="flex items-center gap-2">
-                          <FileCheck className="h-4 w-4 text-green-500" /> Form 16
-                        </li>
-                        <li className="flex items-center gap-2">
-                          <FileCheck className="h-4 w-4 text-green-500" /> Investment Proofs
-                        </li>
-                        <li className="flex items-center gap-2">
-                          <FileCheck className="h-4 w-4 text-green-500" /> Bank Statements
-                        </li>
+                        {DOCUMENT_TYPES.filter(d => uploadedDocs[d.key]).map((doc) => (
+                          <li className="flex items-center gap-2" key={doc.key}>
+                            <FileCheck className="h-4 w-4 text-green-500" /> {doc.label}
+                          </li>
+                        ))}
+                        {!Object.values(uploadedDocs).some(f => f) && (
+                          <li className="text-muted-foreground italic">No documents uploaded.</li>
+                        )}
                       </ul>
                     </div>
                   </CardContent>
@@ -336,7 +417,9 @@ const ITRFiling = () => {
                     <div className="bg-muted/30 p-4 rounded-lg w-full">
                       <div className="flex justify-between mb-2">
                         <p className="font-medium">Total Tax Liability</p>
-                        <p className="font-medium">₹{parseInt(formData.grossIncome || '0') * 0.1}</p>
+                        <p className="font-medium">
+                          ₹{parseInt(formData.grossIncome || '0') * 0.1}
+                        </p>
                       </div>
                       <div className="flex justify-between mb-2">
                         <p className="font-medium">TDS Deducted</p>
@@ -344,15 +427,45 @@ const ITRFiling = () => {
                       </div>
                       <Separator className="my-2" />
                       <div className="flex justify-between font-semibold">
-                        <p>{parseInt(formData.taxDeducted || '0') > parseInt(formData.grossIncome || '0') * 0.1 ? 'Refund Amount' : 'Remaining Tax Payable'}</p>
-                        <p>₹{Math.abs(parseInt(formData.taxDeducted || '0') - parseInt(formData.grossIncome || '0') * 0.1)}</p>
+                        <p>
+                          {parseInt(formData.taxDeducted || '0') >
+                          parseInt(formData.grossIncome || '0') * 0.1
+                            ? 'Refund Amount'
+                            : 'Remaining Tax Payable'}
+                        </p>
+                        <p>
+                          ₹{Math.abs(
+                            parseInt(formData.taxDeducted || '0') -
+                            parseInt(formData.grossIncome || '0') * 0.1
+                          )}
+                        </p>
                       </div>
                     </div>
-                    <Button onClick={handleFileITR} className="w-full flex items-center justify-center gap-2">
+                    <Button
+                      onClick={handleFileITR}
+                      className="w-full flex items-center justify-center gap-2"
+                    >
                       <DownloadCloud className="h-4 w-4" /> File ITR Now
                     </Button>
                   </CardFooter>
                 </Card>
+
+                {/* ITR Filed Confirmation Dialog */}
+                <Dialog open={showFiledDialog} onOpenChange={setShowFiledDialog}>
+                  <DialogContent className="flex flex-col items-center gap-4 text-center">
+                    <DialogHeader>
+                      <DialogTitle>Congratulations!</DialogTitle>
+                      <DialogDescription>
+                        Your ITR has been successfully filed with TaxSmart. You will receive a confirmation email shortly.
+                      </DialogDescription>
+                    </DialogHeader>
+                    <Check className="h-16 w-16 text-green-500 mx-auto my-6" />
+                    <Button
+                      className="w-full mt-3"
+                      onClick={handleFiledDialogClose}
+                    >Done</Button>
+                  </DialogContent>
+                </Dialog>
               </TabsContent>
             </Tabs>
           </CardContent>
