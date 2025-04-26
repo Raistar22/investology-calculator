@@ -1,4 +1,3 @@
-
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -10,6 +9,7 @@ import Calculator from "./pages/Calculator";
 import ITRFiling from "./pages/ITRFiling";
 import NotFound from "./pages/NotFound";
 import AppSidebar from "./components/layout/AppSidebar";
+import FinanceChatbot from "./components/chatbot/FinanceChatbot";
 
 const queryClient = new QueryClient();
 
@@ -21,6 +21,7 @@ const App = () => (
         <Sonner />
         <BrowserRouter>
           <AppSidebar />
+          <FinanceChatbot />
           <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/calculator" element={<Calculator />} />
