@@ -1,6 +1,6 @@
 
 import React, { useState, useRef, useEffect } from "react";
-import { MessageSquare, Bot, MessageCircle, ListCheck, Search } from "lucide-react";
+import { MessageCircle, Bot } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import OptionButtons from "./OptionButtons";
 import { useToast } from "@/hooks/use-toast";
@@ -42,16 +42,13 @@ const FinanceChatbot: React.FC = () => {
     setIsLoading(true);
     setInput("");
 
-    // Check for Perplexity API key in localStorage
     const perplexityKey = localStorage.getItem("perplexity_api_key");
     let botReply = "";
 
     try {
       if (perplexityKey) {
-        // Use Perplexity API for live search
         botReply = await fetchPerplexity(trimmedQuestion, perplexityKey);
       } else {
-        // Fallback: reply from hardcoded/site data only
         botReply = getSiteBotReply(trimmedQuestion);
       }
     } catch (err) {
@@ -88,7 +85,7 @@ const FinanceChatbot: React.FC = () => {
   return (
     <div>
       {/* Floating Chatbot Button */}
-      <div className="fixed top-1/2 left-2 z-50">
+      <div className="fixed bottom-6 left-4 z-50">
         <button
           onClick={() => setOpen((o) => !o)}
           className="bg-primary rounded-full p-3 shadow-xl flex items-center justify-center hover:scale-110 transition-all"
@@ -99,7 +96,7 @@ const FinanceChatbot: React.FC = () => {
       </div>
       {/* Chatbot Window */}
       {open && (
-        <div className="fixed top-20 left-2 z-[100] w-80 max-w-[94vw] glass-dark border border-white/20 rounded-2xl shadow-2xl flex flex-col transition-all animate-gentle-float backdrop-blur-lg">
+        <div className="fixed bottom-24 left-4 z-[100] w-80 max-w-[94vw] glass-dark border border-white/20 rounded-2xl shadow-2xl flex flex-col transition-all animate-gentle-float backdrop-blur-lg">
           <div className="flex items-center gap-2 p-3 border-b border-border bg-primary/10 rounded-t-2xl">
             <Bot className="h-5 w-5 text-primary" />
             <span className="font-bold text-sm text-primary">FinanceBot</span>
@@ -180,4 +177,3 @@ const FinanceChatbot: React.FC = () => {
 };
 
 export default FinanceChatbot;
-
