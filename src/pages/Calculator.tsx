@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useRef } from 'react';
 import { Calculator as CalculatorIcon, Download, FileText } from 'lucide-react';
 import Navbar from '@/components/layout/Navbar';
@@ -14,6 +13,8 @@ import PensionWithdrawalPlanner from '@/components/calculator/PensionWithdrawalP
 import ExportOptions from '@/components/calculator/ExportOptions';
 import InvestorProfileForm from '@/components/calculator/InvestorProfileForm';
 import InvestmentStrategy from '@/components/calculator/InvestmentStrategy';
+import FallingMoney from '@/components/animations/FallingMoney';
+import { useInactivityTimer } from '@/hooks/useInactivityTimer';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { 
@@ -45,6 +46,16 @@ const Calculator = () => {
   const algorithmSectionRef = useRef<HTMLDivElement>(null);
   const openAISectionRef = useRef<HTMLDivElement>(null);
   
+  // New state for the inactivity animation
+  const [showMoneyAnimation, setShowMoneyAnimation] = useState(false);
+  
+  // Setup inactivity timer (20 seconds = 20000ms)
+  const { inactive } = useInactivityTimer(
+    20000, 
+    () => setShowMoneyAnimation(true),
+    () => setShowMoneyAnimation(false)
+  );
+
   useEffect(() => {
     const total = incomeSources.reduce((sum, source) => sum + (source.amount || 0), 0);
     setTotalIncome(total);
@@ -183,6 +194,13 @@ const Calculator = () => {
   return (
     <div className="min-h-screen flex flex-col">
       <Navbar />
+      
+      {/* Money Animation */}
+      <FallingMoney 
+        show={showMoneyAnimation} 
+        onDismiss={handleDismissAnimation} 
+        notesCount={40}
+      />
       
       <main className="flex-grow pt-24 pb-16">
         <div className="container px-4 sm:px-6 mx-auto max-w-7xl">

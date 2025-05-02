@@ -111,6 +111,23 @@
   }
 }
 
+/* Animation for falling money */
+@keyframes falling-money {
+  0% {
+    transform: translateY(0) rotate(0deg);
+    opacity: 1;
+  }
+  
+  75% {
+    opacity: 1;
+  }
+  
+  100% {
+    transform: translateY(100vh) rotate(720deg);
+    opacity: 0.8;
+  }
+}
+
 .page-transition-enter {
   opacity: 0;
   transform: translateY(10px);
