@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { cn } from '@/lib/utils';
@@ -59,12 +60,20 @@ const Navbar = () => {
       <div className="max-w-7xl mx-auto flex items-center justify-between">
         <Link 
           to="/" 
-          className="flex items-center space-x-2 text-primary font-medium text-xl"
+          className="flex items-center space-x-2"
         >
-          <span className="relative font-semibold">
-            <span className="absolute -left-2 -top-1 text-3xl text-primary/20">$</span>
-            <span className="relative z-10">TaxSmart</span>
-          </span>
+          <div className="flex items-center">
+            <div className="relative h-9 w-9 bg-gradient-to-br from-primary via-purple-600 to-blue-500 rounded-lg shadow-md flex items-center justify-center">
+              <span className="text-white font-bold text-lg">T+</span>
+              <div className="absolute -bottom-1 -right-1 h-4 w-4 bg-amber-500 rounded-full border-2 border-white" />
+            </div>
+            <div className="ml-2 font-semibold">
+              <div className="flex flex-col leading-none">
+                <span className="text-primary text-lg">TaxPlus</span>
+                <span className="text-[10px] text-muted-foreground">Smart Tax Solutions</span>
+              </div>
+            </div>
+          </div>
         </Link>
         
         <nav className="hidden md:flex items-center space-x-8">
