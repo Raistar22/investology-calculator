@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect, useRef } from 'react';
 import { Calculator as CalculatorIcon, Download, FileText } from 'lucide-react';
 import Navbar from '@/components/layout/Navbar';
@@ -48,6 +49,11 @@ const Calculator = () => {
   
   // New state for the inactivity animation
   const [showMoneyAnimation, setShowMoneyAnimation] = useState(false);
+  
+  // Add the missing handleDismissAnimation function
+  const handleDismissAnimation = () => {
+    setShowMoneyAnimation(false);
+  };
   
   // Setup inactivity timer (20 seconds = 20000ms)
   const { inactive } = useInactivityTimer(

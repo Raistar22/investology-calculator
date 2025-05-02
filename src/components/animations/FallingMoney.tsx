@@ -68,23 +68,26 @@ const FallingMoney: React.FC<FallingMoneyProps> = ({
   
   return (
     <>
-      <style jsx global>{`
-        @keyframes falling-money {
-          0% {
-            transform: translateY(0) rotate(0deg);
-            opacity: 1;
+      {/* Using a regular style tag without jsx/global properties */}
+      <style>
+        {`
+          @keyframes falling-money {
+            0% {
+              transform: translateY(0) rotate(0deg);
+              opacity: 1;
+            }
+            
+            75% {
+              opacity: 1;
+            }
+            
+            100% {
+              transform: translateY(100vh) rotate(720deg);
+              opacity: 0.8;
+            }
           }
-          
-          75% {
-            opacity: 1;
-          }
-          
-          100% {
-            transform: translateY(100vh) rotate(720deg);
-            opacity: 0.8;
-          }
-        }
-      `}</style>
+        `}
+      </style>
       
       <div 
         className={cn(
