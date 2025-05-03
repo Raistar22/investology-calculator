@@ -160,32 +160,6 @@ const TaxRegimeSelector: React.FC<TaxRegimeSelectorProps> = ({ onSelect, selecte
           </div>
         ))}
       </div>
-      
-      <div className="mt-6 bg-muted/50 rounded-lg p-4">
-        <h5 className="text-sm font-medium mb-2">Tax Rates Comparison</h5>
-        <div className="grid grid-cols-2 gap-4">
-          <div>
-            <h6 className="text-xs font-medium mb-2 text-primary">Old Regime Rates</h6>
-            <ul className="text-xs space-y-1">
-              <li>Up to ₹2.5L: Nil</li>
-              <li>₹2.5L to ₹5L: 5%</li>
-              <li>₹5L to ₹10L: 20%</li>
-              <li>Above ₹10L: 30%</li>
-            </ul>
-          </div>
-          <div>
-            <h6 className="text-xs font-medium mb-2 text-primary">New Regime Rates</h6>
-            <ul className="text-xs space-y-1">
-              <li>Up to ₹3L: Nil</li>
-              <li>₹3L to ₹6L: 5%</li>
-              <li>₹6L to ₹9L: 10%</li>
-              <li>₹9L to ₹12L: 15%</li>
-              <li>₹12L to ₹15L: 20%</li>
-              <li>Above ₹15L: 30%</li>
-            </ul>
-          </div>
-        </div>
-      </div>
     </div>
   );
 };
